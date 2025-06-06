@@ -29,7 +29,7 @@ namespace ArendaPro
             string connStr = ConfigurationManager.ConnectionStrings["DbConnection"]?.ConnectionString;
             BD db = new BD(connStr);
 
-            string query = $"SELECT role FROM users WHERE username = @username AND password = @password";
+            string query = "SELECT role, first_name, last_name, middle_name, email, passport_number FROM users WHERE username = @username AND password = @password";
 
             using (var conn = db.GetConnection())
             {
@@ -39,29 +39,39 @@ namespace ArendaPro
                     cmd.Parameters.AddWithValue("username", username);
                     cmd.Parameters.AddWithValue("password", password);
 
-                    var result = cmd.ExecuteScalar();
-
-                    if (result != null)
+                    using (var reader = cmd.ExecuteReader())
                     {
-                        string role = result.ToString();
+                        if (reader.Read())
+                        {
+                            string role = reader.GetString(0);
+                            string firstName = reader.GetString(1);
+                            string lastName = reader.GetString(2);
+                            string middleName = reader.GetString(3);
+                            string email = reader.GetString(4);
+                            string passportNumber = reader.GetString(5);
 
-                        var main = new MainWindow(role, this); // ← передаём ссылку на окно входа
-                        main.Show();
-                        this.Hide();
-                    }
-                    else
-                    {
-                        MessageBox.Show("Неверный логин или пароль.");
+                            string fullName = $"{lastName} {firstName} {middleName}";
+
+                            var mainWindow = new MainWindow(role, username, fullName, email, passportNumber, this);
+                            mainWindow.Show();
+                            this.Hide();
+                        }
+                        else
+                        {
+                            MessageBox.Show("Неверный логин или пароль.");
+                        }
                     }
                 }
             }
         }
+
         private void txtUsername_TextChanged(object sender, TextChangedEventArgs e)
         {
             txtUsernamePlaceholder.Visibility = string.IsNullOrWhiteSpace(txtUsername.Text)
                 ? Visibility.Visible
                 : Visibility.Collapsed;
         }
+
         public void ResetForRelogin()
         {
             txtPassword.Password = "";
@@ -70,12 +80,13 @@ namespace ArendaPro
             txtUsername.Focus();
             txtUsername.SelectAll();
         }
+
         private void txtPassword_PasswordChanged(object sender, RoutedEventArgs e)
         {
             txtPasswordPlaceholder.Visibility = string.IsNullOrWhiteSpace(txtPassword.Password)
                 ? Visibility.Visible
                 : Visibility.Collapsed;
         }
-
     }
 }
+

@@ -104,9 +104,6 @@
     <Compile Include="AddColumnDialog.xaml.cs">
       <DependentUpon>AddColumnDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="AddConnectionWindow.xaml.cs">
-      <DependentUpon>AddConnectionWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="BD.cs" />
     <Compile Include="ContractWindow.xaml.cs">
       <DependentUpon>ContractWindow.xaml</DependentUpon>
@@ -136,13 +133,9 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="AddConnectionWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="ContractWindow.xaml">
-      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="EditColumnDialog.xaml">
       <SubType>Designer</SubType>

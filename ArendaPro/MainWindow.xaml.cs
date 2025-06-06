@@ -25,40 +25,47 @@ namespace ArendaPro
     public partial class MainWindow : Window
     {
         private LoginWindow loginWindow;
-
-        private List<DbConnectionConfig> connections;
-        public static string ActiveConnectionString; // используется в BD
-
         private string userRole;
-        public MainWindow(string role, Window loginWinn)
+        private string userName;
+        private string fullName;
+        private string email;
+        private string passportNumber;
+
+        public MainWindow(string role, string username, string fullName, string email, string passportNumber, Window loginWinn)
         {
             InitializeComponent();
             loginWindow = loginWinn as LoginWindow;
 
             userRole = role;
-           
-            txtRoleInfo.Text = $"Вы зашли как: {userRole}";
+            userName = username;
+            this.fullName = fullName;
+            this.email = email;
+            this.passportNumber = passportNumber;
 
-            // LoadConnections(); 
+            txtRoleInfo.Text = $"Вы зашли как: {userRole}";
+            txtWorkerName.Text = $"ФИО: {fullName}";
+            txtEmail.Text = $"Email: {email}";
+            txtPassport.Text = $"Паспорт: {passportNumber}";
 
             switch (userRole.ToLower())
             {
                 case "администратор":
+                    // Действия для администраторов
                     break;
                 case "менеджер":
+                    // Действия для менеджеров
                     break;
                 case "director":
+                    // Действия для директора
                     break;
                 case "guest":
+                    // Действия для гостей
+                    break;
                 default:
                     break;
             }
         }
-        public class DbConnectionConfig
-        {
-            public string Name { get; set; }
-            public string ConnectionString { get; set; }
-        }
+
         protected override void OnClosed(EventArgs e)
         {
             base.OnClosed(e);
@@ -68,80 +75,8 @@ namespace ArendaPro
             if (loginWindow != null)
                 loginWindow.Show();
         }
-        private void LoadConnections()
-        {
-            connections = new List<DbConnectionConfig>();
 
-            // Добавляем локальное подключение первым
-            connections.Add(new DbConnectionConfig
-            {
-                Name = "Локальное (по умолчанию)",
-                ConnectionString = "Host=localhost;Port=5432;Username=postgres;Password=123;Database=arendapro;"
-            });
-
-            try
-            {
-                if (File.Exists("connections.json"))
-                {
-                    string json = File.ReadAllText("connections.json");
-                    var userConnections = JsonSerializer.Deserialize<List<DbConnectionConfig>>(json);
-
-                    if (userConnections != null)
-                        connections.AddRange(userConnections);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Ошибка загрузки подключений: " + ex.Message);
-            }
-
-            ConnectionSelector.ItemsSource = connections;
-            ConnectionSelector.DisplayMemberPath = "Name";
-            ConnectionSelector.SelectedIndex = 0;
-
-            ActiveConnectionString = connections[0].ConnectionString;
-        }
-        private void ConnectionSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (ConnectionSelector.SelectedItem is DbConnectionConfig selected)
-            {
-                ActiveConnectionString = selected.ConnectionString;
-
-                // Проверка нужных таблиц
-                if (!CheckDatabaseStructure())
-                {
-                    MessageBox.Show("Выбранная база не соответствует структуре ArendaPro!");
-                    return;
-                }
-
-                MessageBox.Show($"Подключено: {selected.Name}");
-            }
-        }
-        private bool CheckDatabaseStructure()
-        {
-            try
-            {
-                using var conn = new NpgsqlConnection(ActiveConnectionString);
-                conn.Open();
-
-                string[] requiredTables = { "clients", "cars", "contracts", "rentals", "users" };
-                var existing = new List<string>();
-
-                using var cmd = new NpgsqlCommand(
-                    "SELECT table_name FROM information_schema.tables WHERE table_schema='public'", conn);
-                using var reader = cmd.ExecuteReader();
-                while (reader.Read())
-                    existing.Add(reader.GetString(0));
-
-                return requiredTables.All(t => existing.Contains(t));
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void Button_Table_Click(object sender, RoutedEventArgs e)
         {
             Table_BD table_BD = new Table_BD(userRole, this);
             table_BD.Show();
@@ -166,20 +101,13 @@ namespace ArendaPro
             spisok_Dogovorov.Show();
         }
 
-        private void Button_Button_OtherOborot(object sender, RoutedEventArgs e)
+        private void Button_OtherOborot_Click(object sender, RoutedEventArgs e)
         {
             OtherOborot otherOborot = new OtherOborot();
             otherOborot.Show();
         }
-        private void AddConnection_Click(object sender, RoutedEventArgs e)
-        {
-            var addWindow = new AddConnectionWindow();
-            addWindow.ShowDialog(); // ждём закрытия
 
-            LoadConnections(); // обновить список после добавления
-        }
-
-        private void Button_Click_Exit(object sender, RoutedEventArgs e)
+        private void Button_Exit_Click(object sender, RoutedEventArgs e)
         {
             loginWindow?.ResetForRelogin();
             loginWindow?.Show();
