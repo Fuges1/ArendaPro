@@ -1,0 +1,48 @@
+﻿<Window xmlns:local="clr-namespace:ArendaPro" 
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        Title="Контракты" Height="450" Width="800"
+        x:Class="ArendaPro.spisok_dogovorov">
+
+    <Window.Resources>
+        <local:BoolToConfirmCancelButtonConverter x:Key="BoolToConfirmCancelButton"/>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBox x:Name="SearchBox"
+         Grid.Row="0"
+         Margin="10"
+         Text="Введите запрос"
+         Foreground="Gray"
+         GotFocus="SearchBox_GotFocus"
+         LostFocus="SearchBox_LostFocus"
+         TextChanged="SearchBox_TextChanged"/>
+
+        <DataGrid x:Name="ContractsGrid" Grid.Row="1" Margin="10"
+                  AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="№" Binding="{Binding ContractId}" Width="50" SortMemberPath="" CanUserSort="False"/>
+                <DataGridTextColumn Header="ФИО клиента" Binding="{Binding FullName}" Width="*" SortMemberPath="" CanUserSort="False"/>
+                <DataGridTextColumn Header="Файл" Binding="{Binding FilePath}" Width="200" SortMemberPath="" CanUserSort="False"/>
+                <DataGridTextColumn Header="Статус" Binding="{Binding StatusDescription}" Width="*" SortMemberPath="" CanUserSort="False"/>
+
+                <DataGridTemplateColumn Header="Действия" Width="250">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Content="Открыть" Margin="5,0" Click="OpenFile_Click"/>
+                                <Button Content="Печать" Margin="5,0" Click="PrintFile_Click"/>
+                                <Button Content="{Binding IsActive, Converter={StaticResource BoolToConfirmCancelButton}}" Margin="5,0" Click="ToggleContractStatus_Click"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Window>

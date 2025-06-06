@@ -1,0 +1,6 @@
+[
+  {
+    "name": "Локальная БД",
+    "connectionString": "Host=localhost;Port=5432;Username=postgres;Password=123;Database=arendapro;"
+  }
+]

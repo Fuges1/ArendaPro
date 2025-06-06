@@ -1,0 +1,28 @@
+﻿<Window x:Class="ArendaPro.EditColumnDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Редактировать столбец" Height="252" Width="400">
+    <Grid Margin="10,10,10,2">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel>
+            <Label Content="Выберите столбец:"/>
+            <ComboBox x:Name="ColumnSelector" Width="350" Margin="0,5"/>
+
+            <Label Content="Новое имя:" Margin="0,10,0,0"/>
+            <TextBox x:Name="NewNameBox" Width="350"/>
+
+            <Label Content="Новый тип данных (например TEXT, INTEGER):" Margin="0,10,0,0"/>
+            <TextBox x:Name="NewTypeBox" Width="350"/>
+        </StackPanel>
+
+        <Button Content="Применить" Width="100" HorizontalAlignment="Right"
+                Margin="0,10,0,0" Grid.Row="3" Click="Apply_Click"/>
+        <Button x:Name="Close" Content="Отмена" Width="100" HorizontalAlignment="Left"
+        Margin="0,10,0,0" Grid.Row="3" Click="Close_Click"/>
+    </Grid>
+</Window>
