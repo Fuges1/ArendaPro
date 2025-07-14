@@ -1,27 +1,11 @@
-﻿using Npgsql;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
+﻿using System;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.IO;
+using System.Windows.Threading;
+using static ArendaPro.OtherOborot;
 
 namespace ArendaPro
 {
-    /// <summary>
-    /// Логика взаимодействия для MainWindow.xaml
-    /// </summary>
+
     public partial class MainWindow : Window
     {
         private LoginWindow loginWindow;
@@ -31,35 +15,44 @@ namespace ArendaPro
         private string email;
         private string passportNumber;
 
-        public MainWindow(string role, string username, string fullName, string email, string passportNumber, Window loginWinn)
+        public MainWindow(
+    string role,
+    string username,
+    string firstName,
+    string middleName,
+    string lastName,
+    string email,
+    string passportNumber,
+    string passportIssuedBy,
+    DateTime passportIssueDate,
+    Window loginWinn)
         {
             InitializeComponent();
-            loginWindow = loginWinn as LoginWindow;
 
-            userRole = role;
-            userName = username;
-            this.fullName = fullName;
-            this.email = email;
-            this.passportNumber = passportNumber;
+            this.userRole = role;
+            DispatcherTimer timer = new();
+            timer.Interval = TimeSpan.FromSeconds(1);
+            timer.Tick += (s, e) => txtCurrentTime.Text = DateTime.Now.ToString("HH:mm:ss dd.MM.yyyy");
+            timer.Start();
 
-            txtRoleInfo.Text = $"Вы зашли как: {userRole}";
-            txtWorkerName.Text = $"ФИО: {fullName}";
-            txtEmail.Text = $"Email: {email}";
-            txtPassport.Text = $"Паспорт: {passportNumber}";
+            loginWindow = (LoginWindow)loginWinn;
+            fullName = $"{lastName} {firstName} {middleName}";
+            txtRoleInfo.Text = $"Роль: {role}";
+            txtWorkerName.Text = $"{lastName} {firstName} {middleName}";
+            txtEmail.Text = email;
+            txtPassport.Text = $"Серия и номер: {passportNumber}";
+            txtPassportIssued.Text = $"Выдан: {passportIssuedBy}";
+            txtPassportDate.Text = $"Дата выдачи: {passportIssueDate:dd.MM.yyyy}";
+            ConfigureAccessByRole(role);
+        }
 
-            switch (userRole.ToLower())
+        private void ConfigureAccessByRole(string role)
+        {
+            switch (role.ToLower())
             {
                 case "администратор":
-                    // Действия для администраторов
                     break;
                 case "менеджер":
-                    // Действия для менеджеров
-                    break;
-                case "director":
-                    // Действия для директора
-                    break;
-                case "guest":
-                    // Действия для гостей
                     break;
                 default:
                     break;
@@ -70,7 +63,6 @@ namespace ArendaPro
         {
             base.OnClosed(e);
 
-            // На случай, если пользователь закрыл окно не через кнопку, а [X]
             loginWindow?.ResetForRelogin();
             if (loginWindow != null)
                 loginWindow.Show();
@@ -78,32 +70,37 @@ namespace ArendaPro
 
         private void Button_Table_Click(object sender, RoutedEventArgs e)
         {
-            Table_BD table_BD = new Table_BD(userRole, this);
+            Table_BD table_BD = new(userRole, this);
             table_BD.Show();
             this.Hide();
         }
 
         private void Button_Dogovor_Click(object sender, RoutedEventArgs e)
         {
-            ContractWindow contractWindow = new ContractWindow();
+            ContractWindow contractWindow = new();
             contractWindow.ShowDialog();
         }
 
         private void Button_tarifi_Click(object sender, RoutedEventArgs e)
         {
-            Tarifi tarifi = new Tarifi();
-            tarifi.Show();
+            bool isAdmin = string.Equals(CurrentSession.Role,
+                              "администратор",
+                              StringComparison.OrdinalIgnoreCase);
+
+            var win = new Tarifi(isAdmin);
+            win.ShowDialog();
+            ;
         }
 
         private void Button_spisok_dogovorov_Click(object sender, RoutedEventArgs e)
         {
-            spisok_dogovorov spisok_Dogovorov = new spisok_dogovorov();
+            spisok_dogovorov spisok_Dogovorov = new(userRole, fullName);
             spisok_Dogovorov.Show();
         }
 
         private void Button_OtherOborot_Click(object sender, RoutedEventArgs e)
         {
-            OtherOborot otherOborot = new OtherOborot();
+            OtherOborot otherOborot = new(fullName);
             otherOborot.Show();
         }
 
@@ -111,7 +108,7 @@ namespace ArendaPro
         {
             loginWindow?.ResetForRelogin();
             loginWindow?.Show();
-            this.Close();      // Закрыть текущее
+            this.Close();       
         }
     }
 }
