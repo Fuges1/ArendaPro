@@ -46,8 +46,9 @@
 
 
 ## 🎥 Видео-демонстрация
-▶ [Видео для показа ArendaPro](https://youtu.be/4PG_ztQyK5Y)
+▶ [Видео для показа ArendaPro](https://youtu.be/4PG_ztQyK5Y) - YouTube
 
+▶ [Видео для показа ArendaPro](https://rutube.ru/video/private/516c3f0a73c4aa21d86d102dde7acb57/?p=C5F-Q0o50bD5u6gtXoGRzQ) - RuTube
 
 ## 📘 Небольшая инструкция
 
