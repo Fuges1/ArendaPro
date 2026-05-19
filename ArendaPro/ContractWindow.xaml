@@ -127,10 +127,14 @@
          TextChanged="RecalculatePrice"/>
 
                     <Label Content="Место начала:"/>
-                    <ComboBox x:Name="PlaceStartBox" IsEditable="True" SelectionChanged="PlaceStartBox_SelectionChanged"/>
+                    <ComboBox x:Name="PlaceStartBox"
+          IsEditable="True"
+          LostFocus="PlaceStartBox_LostFocus"/>
 
                     <Label Content="Место окончания:"/>
-                    <ComboBox x:Name="PlaceEndBox" IsEditable="True" SelectionChanged="PlaceEndBox_SelectionChanged"/>
+                    <ComboBox x:Name="PlaceEndBox"
+          IsEditable="True"
+          LostFocus="PlaceEndBox_LostFocus"/>
 
                     <Label Content="Стоимость:"/>
                     <TextBox x:Name="PriceBox" IsReadOnly="True"/>

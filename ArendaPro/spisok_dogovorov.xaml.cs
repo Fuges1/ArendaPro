@@ -246,86 +246,147 @@ namespace ArendaPro
         {
             try
             {
+                allContracts.Clear();
 
-                database.ExecuteNonQuery("SELECT prolong_overdue();", new Dictionary<string, object>());
+                database.ExecuteNonQuery(
+                    "EXEC prolong_overdue",
+                    new Dictionary<string, object>()
+                );
 
                 var dataTable = database.ExecuteQuery(@"
-           SELECT 
-    c.id               AS contract_id,
-    c.contract_doc_path AS file_path,  -- <- берём из contracts
+SELECT 
+    c.id AS contract_id,
+    c.contract_doc_path AS file_path,
     c.contract_number,
     c.creation_date,
+
     cl.familia,
     cl.imia,
     cl.otchestvo,
+
     c.return_report_path,
     c.car_id,
     c.time_end,
     c.extra_amount,
     c.paid_amount,
-    cr.marka || ' ' || cr.gos_nomer AS car_info,
+
+    cr.marka + ' ' + cr.gos_nomer AS car_info,
+
     c.price,
     c.start_date,
     c.end_date,
     c.cancel_date,
+
     CASE c.status
-        WHEN 'active'        THEN 'Активен'
-        WHEN 'cancelled'     THEN 'Отменён'
+        WHEN 'active' THEN 'Активен'
+        WHEN 'cancelled' THEN 'Отменён'
         WHEN 'not_confirmed' THEN 'Не подтверждён'
-        WHEN 'completed'     THEN 'Завершён'
+        WHEN 'completed' THEN 'Завершён'
         ELSE c.status
     END AS status_description,
-    c.status
-FROM contracts c
-JOIN clients cl ON c.client_id = cl.id
-JOIN cars cr    ON c.car_id    = cr.id
-ORDER BY c.id ASC;
-        ");
 
-                allContracts.Clear();
+    c.status
+
+FROM contracts c
+
+JOIN clients cl
+    ON c.client_id = cl.id
+
+JOIN cars cr
+    ON c.car_id = cr.id
+
+ORDER BY c.id ASC;
+");
+
                 foreach (System.Data.DataRow row in dataTable.Rows)
                 {
-                    var status = row["status"].ToString();
                     allContracts.Add(new ContractInfo
                     {
-                        CarId = Convert.ToInt32(row["car_id"]),
-                        TimeEnd = row["time_end"] switch
-                        {
-                            TimeSpan ts => ts,
-                            DateTime dt => dt.TimeOfDay,
-                            string s => TimeSpan.Parse(s),
-                            _ => TimeSpan.Zero
-                        },
-                        ExtraAmount = Convert.ToDecimal(row["extra_amount"]),
-                        PaidAmount = Convert.ToDecimal(row["paid_amount"]),
                         ContractId = Convert.ToInt32(row["contract_id"]),
-                        FilePath = row["file_path"]?.ToString() ?? "",
-                        Familia = row["familia"]?.ToString() ?? "",
-                        Imia = row["imia"]?.ToString() ?? "",
-                        Otchestvo = row["otchestvo"]?.ToString() ?? "",
-                        StatusDescription = row["status_description"]?.ToString() ?? "Неизвестно",
-                        IsActive = status == "active",
-                        CarInfo = row["car_info"]?.ToString() ?? "",
-                        Price = Convert.ToDecimal(row["price"]),
-                        CreationDate = Convert.ToDateTime(row["creation_date"]),
-                        StartDate = Convert.ToDateTime(row["start_date"]),
-                        EndDate = Convert.ToDateTime(row["end_date"]),
-                        CancelDate = status == "cancelled" && row["cancel_date"] != DBNull.Value
-                            ? Convert.ToDateTime(row["cancel_date"])
-                            : null,
-                        ReturnReportPath = row["return_report_path"]?.ToString() ?? "",     
-                        Status = status,
 
+                        FilePath = row["file_path"] == DBNull.Value
+                            ? ""
+                            : row["file_path"].ToString(),
+
+                        Familia = row["familia"] == DBNull.Value
+                            ? ""
+                            : row["familia"].ToString(),
+
+                        Imia = row["imia"] == DBNull.Value
+                            ? ""
+                            : row["imia"].ToString(),
+
+                        Otchestvo = row["otchestvo"] == DBNull.Value
+                            ? ""
+                            : row["otchestvo"].ToString(),
+
+                        ReturnReportPath = row["return_report_path"] == DBNull.Value
+                            ? ""
+                            : row["return_report_path"].ToString(),
+
+                        CarId = row["car_id"] == DBNull.Value
+                            ? 0
+                            : Convert.ToInt32(row["car_id"]),
+
+                        TimeEnd = row["time_end"] == DBNull.Value
+                            ? TimeSpan.Zero
+                            : TimeSpan.Parse(row["time_end"].ToString()),
+
+                        ExtraAmount = row["extra_amount"] == DBNull.Value
+                            ? 0
+                            : Convert.ToDecimal(row["extra_amount"]),
+
+                        PaidAmount = row["paid_amount"] == DBNull.Value
+                            ? 0
+                            : Convert.ToDecimal(row["paid_amount"]),
+
+                        CarInfo = row["car_info"] == DBNull.Value
+                            ? ""
+                            : row["car_info"].ToString(),
+
+                        Price = row["price"] == DBNull.Value
+                            ? 0
+                            : Convert.ToDecimal(row["price"]),
+
+                        StartDate = row["start_date"] == DBNull.Value
+                            ? DateTime.MinValue
+                            : Convert.ToDateTime(row["start_date"]),
+
+                        EndDate = row["end_date"] == DBNull.Value
+                            ? DateTime.MinValue
+                            : Convert.ToDateTime(row["end_date"]),
+
+                        CancelDate = row["cancel_date"] == DBNull.Value
+                            ? null
+                            : Convert.ToDateTime(row["cancel_date"]),
+
+                        StatusDescription = row["status_description"] == DBNull.Value
+                            ? ""
+                            : row["status_description"].ToString(),
+
+                        Status = row["status"] == DBNull.Value
+                            ? ""
+                            : row["status"].ToString(),
+
+                        CreationDate = row["creation_date"] == DBNull.Value
+                            ? DateTime.MinValue
+                            : Convert.ToDateTime(row["creation_date"]),
+
+                        IsActive = row["status"].ToString() == "active"
                     });
                 }
 
-
+                ContractsGrid.ItemsSource = null;
                 ContractsGrid.ItemsSource = allContracts;
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Ошибка при загрузке договоров:\n" + ex.Message,
-                                "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(
+                    "Ошибка при загрузке договоров:\n\n" + ex.Message,
+                    "Ошибка",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
             }
         }
         private void ClearFilter_Click(object sender, RoutedEventArgs e)
@@ -522,10 +583,10 @@ ORDER BY c.id ASC;
 
             database.ExecuteNonQuery(
                 @"UPDATE contracts
-        SET status = 'completed',
-            returned_at = now(),
-            return_report_path = @path
-        WHERE id = @id",
+SET status = 'completed',
+    returned_at = GETDATE(),
+    return_report_path = @path
+WHERE id = @id",
                 new Dictionary<string, object>
                 {
                     ["@id"] = ci.ContractId,
@@ -893,6 +954,9 @@ ORDER BY c.id ASC;
             return tempPath;
         }
 
+        private void ContractsGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
 
+        }
     }
 }

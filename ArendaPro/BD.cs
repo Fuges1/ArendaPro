@@ -1,9 +1,9 @@
-﻿using Npgsql;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Threading.Tasks;
+using System.Data.SqlClient;
 namespace ArendaPro
 {
     internal class BD
@@ -15,15 +15,15 @@ namespace ArendaPro
             this.connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
         }
 
-        public NpgsqlConnection GetConnection() => new NpgsqlConnection(connectionString);
+        public SqlConnection GetConnection() => new(connectionString);
 
         public DataTable ExecuteQuery(string query)
         {
             var dt = new DataTable();
-            using var conn = new NpgsqlConnection(connectionString);
+            using var conn = new SqlConnection(connectionString);
             conn.Open();
-            using var cmd = new NpgsqlCommand(query, conn);
-            using var adapter = new NpgsqlDataAdapter(cmd);
+            using var cmd = new SqlCommand(query, conn);
+            using var adapter = new SqlDataAdapter(cmd);
             adapter.Fill(dt);
             return dt;
         }
@@ -31,9 +31,9 @@ namespace ArendaPro
         public DataTable ExecuteQuery(string sql, Dictionary<string, object> parameters)
         {
             var dt = new DataTable();
-            using var conn = new NpgsqlConnection(connectionString);
+            using var conn = new SqlConnection(connectionString);
             conn.Open();
-            using var cmd = new NpgsqlCommand(sql, conn);
+            using var cmd = new SqlCommand(sql, conn);
 
             foreach (var param in parameters)
             {
@@ -47,10 +47,10 @@ namespace ArendaPro
 
         public int ExecuteNonQuery(string sql, Dictionary<string, object> parameters)
         {
-            using var conn = new NpgsqlConnection(connectionString);
+            using var conn = new SqlConnection(connectionString);
             conn.Open();
 
-            using var cmd = new NpgsqlCommand(sql, conn);
+            using var cmd = new SqlCommand(sql, conn);
 
             if (parameters != null)
             {
@@ -65,27 +65,27 @@ namespace ArendaPro
 
         public T ExecuteScalar<T>(string sql, Dictionary<string, object> parameters)
         {
-            using (var conn = new NpgsqlConnection(connectionString))
+            using (var conn = new SqlConnection(connectionString))
             {
                 conn.Open();
-                using (var cmd = new NpgsqlCommand(sql, conn))
+                using (var cmd = new SqlCommand(sql, conn))
                 {
                     foreach (var param in parameters)
                     {
-                        var pgParam = cmd.CreateParameter();
-                        pgParam.ParameterName = param.Key;
+                        var sqlParam = cmd.CreateParameter();
+                        sqlParam.ParameterName = param.Key;
 
                         if (param.Value is DateTime dateValue)
                         {
-                            pgParam.Value = dateValue.Date;
-                            pgParam.NpgsqlDbType = NpgsqlTypes.NpgsqlDbType.Date;
+                            sqlParam.Value = dateValue.Date;
+                            sqlParam.SqlDbType = SqlDbType.Date;
                         }
                         else
                         {
-                            pgParam.Value = param.Value ?? DBNull.Value;
+                            sqlParam.Value = param.Value ?? DBNull.Value;
                         }
 
-                        cmd.Parameters.Add(pgParam);
+                        cmd.Parameters.Add(sqlParam);
                     }
 
                     try
@@ -103,26 +103,26 @@ namespace ArendaPro
             }
         }
 
-        public NpgsqlTransaction BeginTransaction()
+        public SqlTransaction BeginTransaction()
         {
-            var conn = new NpgsqlConnection(connectionString);
+            var conn = new SqlConnection(connectionString);
             conn.Open();
             return conn.BeginTransaction();
         }
 
         public async Task<T> ExecuteScalarAsync<T>(string sql, object parameters = null)
         {
-            using var conn = new NpgsqlConnection(connectionString);
+            using var conn = new SqlConnection(connectionString);
             await conn.OpenAsync();
 
-            using var cmd = new NpgsqlCommand(sql, conn);
+            using var cmd = new SqlCommand(sql, conn);
 
             if (parameters != null)
             {
                 var props = parameters.GetType().GetProperties();
                 foreach (var prop in props)
                 {
-                    cmd.Parameters.AddWithValue(prop.Name, prop.GetValue(parameters) ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@" + prop.Name, prop.GetValue(parameters) ?? DBNull.Value);
                 }
             }
 
@@ -132,10 +132,10 @@ namespace ArendaPro
 
         public async Task<int> ExecuteNonQueryAsync(string sql, object parameters = null)
         {
-            using var conn = new NpgsqlConnection(connectionString);
+            using var conn = new SqlConnection(connectionString);
             await conn.OpenAsync();
 
-            using var cmd = new NpgsqlCommand(sql, conn);
+            using var cmd = new SqlCommand(sql, conn);
 
             if (parameters != null)
             {
@@ -152,10 +152,10 @@ namespace ArendaPro
         public async Task<DataTable> ExecuteQueryAsync(string sql, object parameters = null)
         {
             var dt = new DataTable();
-            using var conn = new NpgsqlConnection(connectionString);
+            using var conn = new SqlConnection(connectionString);
             await conn.OpenAsync();
 
-            using var cmd = new NpgsqlCommand(sql, conn);
+            using var cmd = new SqlCommand(sql, conn);
 
             if (parameters != null)
             {

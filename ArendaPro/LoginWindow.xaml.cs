@@ -1,12 +1,11 @@
-﻿using Npgsql;
-using System;
+﻿using System;
 using System.Configuration;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using static ArendaPro.OtherOborot;
-
+using System.Data.SqlClient;
 namespace ArendaPro
 {
     public partial class LoginWindow : Window
@@ -50,7 +49,7 @@ namespace ArendaPro
                     return;
                 }
 
-                await using var conn = new NpgsqlConnection(connectionString);
+                using var conn = new SqlConnection(connectionString);
                 await conn.OpenAsync();
 
                 if (!await CheckUserExists(conn, username))
@@ -117,18 +116,18 @@ namespace ArendaPro
         private bool IsBcryptHash(string s) =>
           !string.IsNullOrEmpty(s) &&
           (s.StartsWith("$2a$") || s.StartsWith("$2b$") || s.StartsWith("$2y$"));
-        private async Task<bool> CheckUserExists(NpgsqlConnection conn, string username)
+        private async Task<bool> CheckUserExists(SqlConnection conn, string username)
         {
-            using var cmd = new NpgsqlCommand(
+            using var cmd = new SqlCommand(
                 "SELECT 1 FROM users WHERE username = @username", conn);
             cmd.Parameters.AddWithValue("username", username);
             return (await cmd.ExecuteScalarAsync()) != null;
         }
 
         private async Task<(string password, bool isBcrypt)>
-            GetPasswordWithDiagnostics(NpgsqlConnection conn, string username)
+            GetPasswordWithDiagnostics(SqlConnection conn, string username)
         {
-            using var cmd = new NpgsqlCommand(
+            using var cmd = new SqlCommand(
                 "SELECT password FROM users WHERE username = @username", conn);
             cmd.Parameters.AddWithValue("username", username);
 
@@ -140,24 +139,25 @@ namespace ArendaPro
         }
 
         private async Task UpgradePasswordToBcrypt(
-            NpgsqlConnection conn, string username, string plainPwd)
+            SqlConnection conn, string username, string plainPwd)
         {
             string hash = BCrypt.Net.BCrypt.HashPassword(plainPwd);
-            using var cmd = new NpgsqlCommand(
+            using var cmd = new SqlCommand(
                 "UPDATE users SET password = @p WHERE username = @u", conn);
             cmd.Parameters.AddWithValue("p", hash);
             cmd.Parameters.AddWithValue("u", username);
             await cmd.ExecuteNonQueryAsync();
         }
 
-        private async Task<UserData> GetFullUserData(NpgsqlConnection conn, string username)
+        private async Task<UserData> GetFullUserData(SqlConnection conn, string username)
         {
             const string q = @"
         SELECT id, role, first_name, last_name, middle_name,
-               email, passport_number, passport_issued_by, passport_issue_date
-        FROM users WHERE username = @u";
+       email, passport_number, passport_issued_by, passport_issue_date
+FROM [users]
+WHERE username = @u";
 
-            using var cmd = new NpgsqlCommand(q, conn);
+            using var cmd = new SqlCommand(q, conn);
             cmd.Parameters.AddWithValue("u", username);
 
             using var r = await cmd.ExecuteReaderAsync();

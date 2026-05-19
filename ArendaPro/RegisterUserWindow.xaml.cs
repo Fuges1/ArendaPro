@@ -1,9 +1,9 @@
-﻿using Npgsql;
+﻿
 using System;
 using System.Configuration;
 using System.Windows;
 using System.Windows.Controls;
-
+using System.Data.SqlClient;
 namespace ArendaPro
 {
     public partial class RegisterUserWindow : Window
@@ -43,10 +43,10 @@ namespace ArendaPro
                 }
 
 
-                using var conn = new NpgsqlConnection(connectionString);
+                using var conn = new SqlConnection(connectionString);
                 await conn.OpenAsync();
 
-                using (var checkCmd = new NpgsqlCommand(
+                using (var checkCmd = new SqlCommand(
                     @"SELECT COUNT(1)
           FROM public.users
           WHERE passport_number = @passport", conn))
@@ -59,7 +59,7 @@ namespace ArendaPro
                         return;
                     }
                 }
-                using (var checkUser = new NpgsqlCommand(
+                using (var checkUser = new SqlCommand(
     @"SELECT COUNT(1) FROM public.users WHERE username = @username", conn))
                 {
                     checkUser.Parameters.AddWithValue("username", username);
@@ -71,7 +71,7 @@ namespace ArendaPro
                     }
                 }
                 string hash = BCrypt.Net.BCrypt.HashPassword(password);
-                using (var insertCmd = new NpgsqlCommand(@"
+                using (var insertCmd = new SqlCommand(@"
         INSERT INTO public.users
           (username, password, role, first_name, last_name, middle_name,
            email, passport_number, passport_issued_by, passport_issue_date)

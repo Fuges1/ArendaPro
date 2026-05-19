@@ -225,36 +225,68 @@ namespace ArendaPro
             {
                 string query = @"
 SELECT
-    c.id               AS contract_number,
-    cl.familia||' '||cl.imia||' '||cl.otchestvo   AS client_fullname,
-    cr.marka||' ('||cr.gos_nomer||')'             AS car_info,
+    c.id AS contract_number,
+
+    cl.familia + ' ' + cl.imia + ' ' + cl.otchestvo
+        AS client_fullname,
+
+    cr.marka + ' (' + cr.gos_nomer + ')'
+        AS car_info,
+
     c.start_date,
     c.end_date,
-    u.last_name||' '||u.first_name                 AS employee_name,
-    p1.name                                       AS start_place,
-    p2.name                                       AS end_place,
-    
-     c.price          AS price,          -- ставка за день
-    c.extra_amount   AS extra_amount,   -- доплата
-    -- вычисляем дни (включительно) * ставка + доплата
-    ((c.end_date - c.start_date + 1) * c.price + c.extra_amount)
-                     AS total_amount,   -- итог
-    c.paid_amount    AS paid_amount,    -- оплачено
-    -- долг = итог – оплачено
-    ((c.end_date - c.start_date + 1) * c.price + c.extra_amount
-     - c.paid_amount)
-                     AS debt,           -- долг
-    cs.description   AS status
-FROM contracts c
-  JOIN clients cl  ON c.client_id = cl.id
-  JOIN cars    cr  ON c.car_id    = cr.id
-  LEFT JOIN users   u   ON c.user_id        = u.id
-  LEFT JOIN places  p1  ON c.place_start_id = p1.id
-  LEFT JOIN places  p2  ON c.place_end_id   = p2.id
-  LEFT JOIN contract_statuses cs ON c.status = cs.code
-WHERE c.start_date BETWEEN @from AND @to
-ORDER BY c.start_date DESC;
 
+    u.last_name + ' ' + u.first_name
+        AS employee_name,
+
+    p1.name AS start_place,
+    p2.name AS end_place,
+
+    c.price AS price,
+    c.extra_amount AS extra_amount,
+
+    (
+        (DATEDIFF(DAY, c.start_date, c.end_date) + 1)
+        * c.price
+        + c.extra_amount
+    ) AS total_amount,
+
+    c.paid_amount AS paid_amount,
+
+    (
+        (
+            (DATEDIFF(DAY, c.start_date, c.end_date) + 1)
+            * c.price
+            + c.extra_amount
+        )
+        - c.paid_amount
+    ) AS debt,
+
+    cs.description AS status
+
+FROM contracts c
+
+JOIN clients cl
+    ON c.client_id = cl.id
+
+JOIN cars cr
+    ON c.car_id = cr.id
+
+LEFT JOIN [users] u
+    ON c.user_id = u.id
+
+LEFT JOIN places p1
+    ON c.place_start_id = p1.id
+
+LEFT JOIN places p2
+    ON c.place_end_id = p2.id
+
+LEFT JOIN contract_statuses cs
+    ON c.status = cs.code
+
+WHERE c.start_date BETWEEN @from AND @to
+
+ORDER BY c.start_date DESC;
 ";
 
 

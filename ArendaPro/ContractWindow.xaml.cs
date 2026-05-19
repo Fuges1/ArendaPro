@@ -1,7 +1,5 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
-using Npgsql;
-using NpgsqlTypes;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -14,10 +12,10 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using static ArendaPro.OtherOborot;
+using System.Data.SqlClient;
+using System.Data;
 namespace ArendaPro
 {
-
-
     public partial class ContractWindow : Window
     {
         private decimal _dailyRate = 0m;
@@ -114,12 +112,18 @@ namespace ArendaPro
             try
             {
                 return await db.ExecuteScalarAsync<bool>(@"
-            SELECT NOT EXISTS (
-                SELECT 1 FROM contracts 
-                WHERE car_id = @carId 
-                AND status != 'cancelled'
-                AND (start_date, end_date) OVERLAPS (@startDate, @endDate)
-            )", new { carId, startDate, endDate });
+            SELECT CASE 
+WHEN EXISTS (
+    SELECT 1
+    FROM contracts
+    WHERE car_id = @carId
+      AND status != 'cancelled'
+      AND start_date <= @endDate
+      AND end_date >= @startDate
+)
+THEN CAST(0 AS BIT)
+ELSE CAST(1 AS BIT)
+END", new { carId, startDate, endDate });
             }
             catch (Exception ex)
             {
@@ -132,11 +136,18 @@ namespace ArendaPro
             try
             {
                 return await db.ExecuteScalarAsync<bool>(@"
-            SELECT EXISTS (
-                SELECT 1 FROM contracts 
-                WHERE car_id = @carId 
-                AND status = 'not_confirmed'
-                AND (start_date, end_date) OVERLAPS (@startDate, @endDate)
+            SELECT CASE 
+WHEN EXISTS (
+    SELECT 1
+    FROM contracts
+    WHERE car_id = @carId
+      AND status = 'not_confirmed'
+      AND start_date <= @endDate
+      AND end_date >= @startDate
+)
+THEN CAST(1 AS BIT)
+ELSE CAST(0 AS BIT)
+END
             )", new { carId, startDate, endDate });
             }
             catch (Exception ex)
@@ -256,7 +267,7 @@ namespace ArendaPro
 
             if (!useTempMode)
             {
-                var cmd = new NpgsqlCommand(@"
+                var cmd = new SqlCommand(@"
 SELECT t.daily_rate
   FROM tariffs t
   JOIN cars c ON c.tariff_id = t.id
@@ -272,14 +283,13 @@ SELECT t.daily_rate
             }
             else
             {
-                var cmd = new NpgsqlCommand(@"
-SELECT price
-  FROM car_tariff_history
- WHERE car_id   = @id
-   AND start_date <= @d
-   AND (end_date IS NULL OR end_date >= @d)
- ORDER BY start_date DESC
- LIMIT 1;", conn);
+                var cmd = new SqlCommand(@"
+SELECT TOP 1 price
+FROM car_tariff_history
+WHERE car_id = @id
+  AND start_date <= @d
+  AND (end_date IS NULL OR end_date >= @d)
+ORDER BY start_date DESC;", conn);
                 cmd.Parameters.AddWithValue("id", carId);
                 cmd.Parameters.AddWithValue("d", startDateTime.Date);
                 var r = await cmd.ExecuteScalarAsync();
@@ -317,16 +327,16 @@ SELECT price
             lastValidEndDate = end;
             return true;
         }
-        private async void AddPlaceIfNew(string place, ComboBox comboBox)
+        private async Task AddPlaceIfNew(string place, ComboBox comboBox)
         {
             if (string.IsNullOrWhiteSpace(place)) return;
 
             using (var conn = db.GetConnection())
             {
                 await conn.OpenAsync();
-                var checkCmd = new NpgsqlCommand("SELECT COUNT(*) FROM places WHERE name = @name", conn);
+                var checkCmd = new SqlCommand("SELECT COUNT(*) FROM places WHERE name = @name", conn);
                 checkCmd.Parameters.AddWithValue("name", place);
-                var count = (long)await checkCmd.ExecuteScalarAsync();
+                int count = Convert.ToInt32(await checkCmd.ExecuteScalarAsync());
 
                 if (count == 0)
                 {
@@ -338,7 +348,7 @@ SELECT price
 
                     if (result == MessageBoxResult.Yes)
                     {
-                        var insertCmd = new NpgsqlCommand("INSERT INTO places (name) VALUES (@name)", conn);
+                        var insertCmd = new SqlCommand("INSERT INTO places (name) VALUES (@name)", conn);
                         insertCmd.Parameters.AddWithValue("name", place);
                         await insertCmd.ExecuteNonQueryAsync();
                         comboBox.Items.Add(place);   
@@ -347,20 +357,14 @@ SELECT price
             }
         }
 
-        private void PlaceStartBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void PlaceStartBox_LostFocus(object sender, RoutedEventArgs e)
         {
-            if (PlaceStartBox.SelectedItem != null && PlaceStartBox.Text != PlaceStartBox.SelectedItem.ToString())
-            {
-                AddPlaceIfNew(PlaceStartBox.Text, PlaceStartBox);
-            }
+            await AddPlaceIfNew(PlaceStartBox.Text, PlaceStartBox);
         }
 
-        private void PlaceEndBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void PlaceEndBox_LostFocus(object sender, RoutedEventArgs e)
         {
-            if (PlaceEndBox.SelectedItem != null && PlaceEndBox.Text != PlaceEndBox.SelectedItem.ToString())
-            {
-                AddPlaceIfNew(PlaceEndBox.Text, PlaceEndBox);
-            }
+            await AddPlaceIfNew(PlaceEndBox.Text, PlaceEndBox);
         }
 
         private async void GenerateContract_Click(object sender, RoutedEventArgs e)
@@ -434,7 +438,7 @@ SELECT price
                 {
                     await conn.OpenAsync();
 
-                    var cmd = new NpgsqlCommand("SELECT * FROM clients WHERE id = @id", conn);
+                    var cmd = new SqlCommand("SELECT * FROM clients WHERE id = @id", conn);
                     cmd.Parameters.AddWithValue("id", clientId);
                     using (var reader = await cmd.ExecuteReaderAsync())
                     {
@@ -451,7 +455,7 @@ SELECT price
                         }
                     }
 
-                    cmd = new NpgsqlCommand("SELECT * FROM cars WHERE id = @id", conn);
+                    cmd = new SqlCommand("SELECT * FROM cars WHERE id = @id", conn);
                     cmd.Parameters.AddWithValue("id", carId);
                     using (var reader = await cmd.ExecuteReaderAsync())
                     {
@@ -476,7 +480,7 @@ SELECT price
                 using (var conn = db.GetConnection())
                 {
                     await conn.OpenAsync();
-                    var cmd = new NpgsqlCommand("SELECT COALESCE(MAX(contract_number), 0) + 1 FROM contracts WHERE contract_number::text ~ '^[0-9]+$'", conn);
+                    var cmd = new SqlCommand("SELECT ISNULL(MAX(contract_number), 0) + 1 \r\nFROM contracts", conn);
                     contractNumber = (await cmd.ExecuteScalarAsync() ?? 1).ToString();
                     if (!int.TryParse(contractNumber, out int contractNum) || contractNum <= 0)
                     {
@@ -539,7 +543,7 @@ SELECT price
 
                     async Task<int> GetPlaceId(string placeName)
                     {
-                        var cmd = new NpgsqlCommand("SELECT id FROM places WHERE name = @name", conn);
+                        var cmd = new SqlCommand("SELECT id FROM places WHERE name = @name", conn);
                         cmd.Parameters.AddWithValue("name", placeName);
                         var result = await cmd.ExecuteScalarAsync();
                         if (result == null)
@@ -558,7 +562,7 @@ SELECT price
                 using (var conn = db.GetConnection())
                 {
                     await conn.OpenAsync();
-                    var insertCmd = new NpgsqlCommand(@"
+                    var insertCmd = new SqlCommand(@"
 INSERT INTO contracts (
     client_id, car_id, user_id,
     start_date, end_date, time_start, time_end,
@@ -572,26 +576,26 @@ VALUES (
     @place_start, @place_end,
     @contract_number, @creation_date,
     @price, @path, 'not_confirmed'
-)
-RETURNING id;", conn);
+);
 
-                    insertCmd.Parameters.AddWithValue("client_id", NpgsqlDbType.Integer, clientId);
-                    insertCmd.Parameters.AddWithValue("car_id", NpgsqlDbType.Integer, carId);
-                    insertCmd.Parameters.AddWithValue("user_id", NpgsqlDbType.Integer, CurrentSession.UserId);
-                    insertCmd.Parameters.AddWithValue("start_date", NpgsqlDbType.Date, startDateOnly);
-                    insertCmd.Parameters.AddWithValue("end_date", NpgsqlDbType.Date, endDateOnly);
-                    insertCmd.Parameters.AddWithValue("time_start", NpgsqlDbType.Text, timeStart);
-                    insertCmd.Parameters.AddWithValue("time_end", NpgsqlDbType.Text, timeEnd);
-                    insertCmd.Parameters.AddWithValue("place_start", NpgsqlDbType.Integer, placeStartId);
-                    insertCmd.Parameters.AddWithValue("place_end", NpgsqlDbType.Integer, placeEndId);
-                    insertCmd.Parameters.AddWithValue("contract_number", NpgsqlDbType.Integer, int.Parse(contractNumber));
-                    insertCmd.Parameters.AddWithValue("creation_date", NpgsqlDbType.Date, DateTime.Today);
-                    insertCmd.Parameters.AddWithValue("price", NpgsqlDbType.Numeric, dailyRate);
-                    insertCmd.Parameters.AddWithValue("path", NpgsqlDbType.Text, savePath);
+SELECT SCOPE_IDENTITY();", conn);
 
+                    insertCmd.Parameters.AddWithValue("client_id", clientId);
+                    insertCmd.Parameters.AddWithValue("car_id", carId);
+                    insertCmd.Parameters.AddWithValue("user_id", CurrentSession.UserId);
+                    insertCmd.Parameters.AddWithValue("start_date", startDateOnly);
+                    insertCmd.Parameters.AddWithValue("end_date", endDateOnly);
+                    insertCmd.Parameters.AddWithValue("time_start", timeStart);
+                    insertCmd.Parameters.AddWithValue("time_end", timeEnd);
+                    insertCmd.Parameters.AddWithValue("place_start", placeStartId);
+                    insertCmd.Parameters.AddWithValue("place_end", placeEndId);
+                    insertCmd.Parameters.AddWithValue("contract_number", int.Parse(contractNumber));
+                    insertCmd.Parameters.AddWithValue("creation_date", DateTime.Today);
+                    insertCmd.Parameters.AddWithValue("price", dailyRate);
+                    insertCmd.Parameters.AddWithValue("path", savePath);
 
                     int contractId = (int)await insertCmd.ExecuteScalarAsync();
-                    using (var docCmd = new NpgsqlCommand(@"
+                    using (var docCmd = new SqlCommand(@"
     INSERT INTO public.contracts_docs (
         contract_id,
         doc_path,
@@ -602,9 +606,9 @@ RETURNING id;", conn);
         @type
     );", conn))
                     {
-                        docCmd.Parameters.AddWithValue("cid", NpgsqlTypes.NpgsqlDbType.Integer, contractId);
-                        docCmd.Parameters.AddWithValue("path", NpgsqlTypes.NpgsqlDbType.Text, savePath);
-                        docCmd.Parameters.AddWithValue("type", NpgsqlTypes.NpgsqlDbType.Text, System.IO.Path.GetExtension(savePath).TrimStart('.'));
+                        docCmd.Parameters.AddWithValue("@cid", contractId);
+                        docCmd.Parameters.AddWithValue("@path", savePath);
+                        docCmd.Parameters.AddWithValue("@type", System.IO.Path.GetExtension(savePath).TrimStart('.'));
                         await docCmd.ExecuteNonQueryAsync();
                     }
                 }

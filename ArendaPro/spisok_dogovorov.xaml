@@ -116,7 +116,7 @@
                     Style="{StaticResource ContractsGridStyle}"
                     VirtualizingStackPanel.IsVirtualizing="True"
                     EnableRowVirtualization="True"
-                    ScrollViewer.CanContentScroll="True">
+                    ScrollViewer.CanContentScroll="True" SelectionChanged="ContractsGrid_SelectionChanged">
 
                     <DataGrid.ColumnHeaderStyle>
                         <Style TargetType="DataGridColumnHeader">

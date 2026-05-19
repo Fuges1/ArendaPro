@@ -113,7 +113,7 @@
                     </StackPanel>
 
                     <!-- Таблица -->
-                    <DataGrid CanUserReorderColumns="False" x:Name="DataTableGrid" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True" FontSize="13" HeadersVisibility="Column" SelectionUnit="FullRow" GridLinesVisibility="None" Background="White" />
+                    <DataGrid CanUserReorderColumns="False" x:Name="DataTableGrid" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True" FontSize="13" HeadersVisibility="Column" SelectionUnit="FullRow" GridLinesVisibility="None" Background="White" SelectionChanged="DataTableGrid_SelectionChanged" />
                 </StackPanel>
             </Border>
         </Grid>

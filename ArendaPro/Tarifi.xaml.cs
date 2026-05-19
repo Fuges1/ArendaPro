@@ -1,14 +1,14 @@
-﻿using Npgsql;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
 using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-
 namespace ArendaPro
 {
     public partial class Tarifi : Window
@@ -88,21 +88,25 @@ namespace ArendaPro
         private List<OverlapInfo> GetOverlaps(int carId, DateTime start, DateTime? end)
         {
             var list = new List<OverlapInfo>();
-            using var cn = new NpgsqlConnection(_cs);
+
+            using var cn = new SqlConnection(_cs);
             cn.Open();
 
-            using var cmd = new NpgsqlCommand(@"
-        SELECT start_date, end_date, price
-          FROM public.car_tariff_history
-         WHERE car_id = @car
-           AND tstzrange(start_date, COALESCE(end_date, 'infinity')) &&
-               tstzrange(@start, COALESCE(@end, 'infinity'))
-         ORDER BY start_date;", cn);
-            cmd.Parameters.AddWithValue("car", carId);
-            cmd.Parameters.AddWithValue("start", start);
-            cmd.Parameters.AddWithValue("end", (object?)end ?? DBNull.Value);
+            using var cmd = new SqlCommand(@"
+SELECT start_date, end_date, price
+FROM dbo.car_tariff_history
+WHERE car_id = @car
+  AND start_date <= ISNULL(@end, '9999-12-31')
+  AND ISNULL(end_date, '9999-12-31') >= @start
+ORDER BY start_date;
+", cn);
+
+            cmd.Parameters.AddWithValue("@car", carId);
+            cmd.Parameters.AddWithValue("@start", start);
+            cmd.Parameters.AddWithValue("@end", (object?)end ?? DBNull.Value);
 
             using var reader = cmd.ExecuteReader();
+
             while (reader.Read())
             {
                 list.Add(new OverlapInfo
@@ -112,52 +116,52 @@ namespace ArendaPro
                     Price = reader.GetDecimal(2)
                 });
             }
+
             return list;
         }
 
 
-        private void DeleteOverlaps(int carId, DateTime start, DateTime? end, NpgsqlConnection cn, NpgsqlTransaction tr)
+        private void DeleteOverlaps(
+    int carId,
+    DateTime start,
+    DateTime? end,
+    SqlConnection cn,
+    SqlTransaction tr)
         {
-            using var cmd = new NpgsqlCommand(@"
-        DELETE FROM public.car_tariff_history
-         WHERE car_id = @car
-           AND tstzrange(start_date, COALESCE(end_date, 'infinity')) &&
-               tstzrange(@start, COALESCE(@end, 'infinity'));", cn, tr);
-            cmd.Parameters.AddWithValue("car", carId);
-            cmd.Parameters.AddWithValue("start", start);
-            cmd.Parameters.AddWithValue("end", (object?)end ?? DBNull.Value);
+            using var cmd = new SqlCommand(@"
+DELETE FROM dbo.car_tariff_history
+WHERE car_id = @car
+  AND start_date <= ISNULL(@end, '9999-12-31')
+  AND ISNULL(end_date, '9999-12-31') >= @start;
+", cn, tr);
+
+            cmd.Parameters.Add("@car", SqlDbType.Int).Value = carId;
+            cmd.Parameters.Add("@start", SqlDbType.DateTime2).Value = start;
+            cmd.Parameters.Add("@end", SqlDbType.DateTime2).Value =
+                (object?)end ?? DBNull.Value;
+
             cmd.ExecuteNonQuery();
         }
 
-        private void UpdateHistory(
-            TariffRow rw,
-            NpgsqlConnection cn,
-            NpgsqlTransaction tr,
-            DateTime s,
-            DateTime? e)
+        private void InsertTemp(
+    int carId,
+    decimal price,
+    DateTime start,
+    DateTime? end,
+    SqlConnection cn,
+    SqlTransaction tr)
         {
-            using var upd = new NpgsqlCommand(@"
-UPDATE car_tariff_history
-SET price      = @price,
-    end_date   = @e
-WHERE car_id    = @car
-  AND start_date = @s", cn, tr);
-            upd.Parameters.AddWithValue("price", rw.Price);
-            upd.Parameters.AddWithValue("car", rw.CarId);
-            upd.Parameters.AddWithValue("s", s);
-            upd.Parameters.AddWithValue("e", (object?)e ?? DBNull.Value);
-            upd.ExecuteNonQuery();
-        }
+            using var cmd = new SqlCommand(@"
+INSERT INTO dbo.car_tariff_history
+    (car_id, price, start_date, end_date)
+VALUES
+    (@car, @price, @start, @end);", cn, tr);
 
-        private void InsertTemp(int carId, decimal price, DateTime start, DateTime? end, NpgsqlConnection cn, NpgsqlTransaction tr)
-        {
-            using var cmd = new NpgsqlCommand(@"
-        INSERT INTO public.car_tariff_history (car_id, price, start_date, end_date)
-        VALUES (@car, @price, @start, @end);", cn, tr);
-            cmd.Parameters.AddWithValue("car", carId);
-            cmd.Parameters.AddWithValue("price", price);
-            cmd.Parameters.AddWithValue("start", start);
-            cmd.Parameters.AddWithValue("end", (object?)end ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@car", carId);
+            cmd.Parameters.AddWithValue("@price", price);
+            cmd.Parameters.AddWithValue("@start", start);
+            cmd.Parameters.AddWithValue("@end", (object?)end ?? DBNull.Value);
+
             cmd.ExecuteNonQuery();
         }
         private sealed class TariffRow : INotifyPropertyChanged
@@ -221,26 +225,47 @@ ORDER BY c.id;";
         {
             var today = DateTime.Today;
             var soon = today.AddDays(3);
-            using var cn = new NpgsqlConnection(_cs);
+
+            using var cn = new SqlConnection(_cs);
             cn.Open();
-            using var cmd = new NpgsqlCommand(@"
-SELECT car_id, start_date, end_date, price
-FROM car_tariff_history
+
+            using var cmd = new SqlCommand(@"
+SELECT
+    car_id,
+    start_date,
+    end_date,
+    price
+FROM dbo.car_tariff_history
 WHERE end_date BETWEEN @today AND @soon
-ORDER BY end_date", cn);
-            cmd.Parameters.AddWithValue("today", today);
-            cmd.Parameters.AddWithValue("soon", soon);
+ORDER BY end_date;
+", cn);
+
+            cmd.Parameters.Add("@today", SqlDbType.Date).Value = today;
+            cmd.Parameters.Add("@soon", SqlDbType.Date).Value = soon;
 
             var list = new List<string>();
+
             using var r = cmd.ExecuteReader();
+
             while (r.Read())
-                list.Add($"Авто {r.GetInt32(0)}: {r.GetDateTime(1):d}–{r.GetDateTime(2):d} ({r.GetDecimal(3):N2} ₽)");
+            {
+                list.Add(
+                    $"Авто {r.GetInt32(0)}: " +
+                    $"{r.GetDateTime(1):d}–" +
+                    $"{r.GetDateTime(2):d} " +
+                    $"({r.GetDecimal(3):N2} ₽)"
+                );
+            }
 
             if (list.Count > 0)
-                MessageBox.Show("Скоро истекают:\n" + string.Join("\n", list),
-                                "Внимание администратору",
-                                MessageBoxButton.OK,
-                                MessageBoxImage.Information);
+            {
+                MessageBox.Show(
+                    "Скоро истекают:\n" + string.Join("\n", list),
+                    "Внимание администратору",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information
+                );
+            }
         }
         private void LoadRows()
         {
@@ -258,11 +283,11 @@ ORDER BY end_date", cn);
 
             _segments.Clear();
 
-            using var cn = new NpgsqlConnection(_cs);
+            using var cn = new SqlConnection(_cs);
             cn.Open();
 
             var baseRates = new Dictionary<int, (string model, decimal price)>();
-            using (var cmd = new NpgsqlCommand(SqlStatic, cn))
+            using (var cmd = new SqlCommand(SqlStatic, cn))
             using (var r = cmd.ExecuteReader())
                 while (r.Read())
                     baseRates[r.GetInt32(0)] = (r.GetString(1), r.GetDecimal(2));
@@ -427,7 +452,7 @@ ORDER BY end_date", cn);
                 return;
             }
 
-            using var cn = new NpgsqlConnection(_cs);
+            using var cn = new SqlConnection(_cs);
             cn.Open();
             using (var tr = cn.BeginTransaction())
             {
@@ -535,11 +560,16 @@ ORDER BY end_date", cn);
         }
         private void PurgeExpiredHistory()
         {
-            using var cn = new NpgsqlConnection(_cs);
+            using var cn = new SqlConnection(_cs);
             cn.Open();
-            using var cmd = new NpgsqlCommand(
-                "DELETE FROM car_tariff_history WHERE end_date < @today", cn);
-            cmd.Parameters.AddWithValue("today", DateTime.Today);
+
+            using var cmd = new SqlCommand(@"
+DELETE FROM dbo.car_tariff_history
+WHERE end_date < @today;
+", cn);
+
+            cmd.Parameters.Add("@today", SqlDbType.Date).Value = DateTime.Today;
+
             cmd.ExecuteNonQuery();
         }
         private void ChkTemporary_OnChanged(object s, RoutedEventArgs e)

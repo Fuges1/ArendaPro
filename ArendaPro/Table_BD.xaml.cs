@@ -1,5 +1,4 @@
-﻿using Npgsql;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -9,7 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-
+using System.Data.SqlClient;
 namespace ArendaPro
 {
     public partial class Table_BD : Window
@@ -152,7 +151,7 @@ namespace ArendaPro
     { "early_reason",            "Причина доср. возврата" },
      { "tariff_rate",  "Стоимость аренды" },
     { "description",            "Описание статуса" },
-    { "returnedat",             "Возвращено по адресу" },  
+    { "returnedat",             "Возвращено по адресу" },
     { "доступность",            "Доступность" },
 
 { "author_id",            "Автор"         }
@@ -190,7 +189,7 @@ namespace ArendaPro
             db = new BD(connStr);
             AdjustPermissions();
 
-            if (userRole == "менеджер")
+            if (userRole == "manager")
             {
                 var managerTables = new[] { "cars", "clients", "maintenance_schedule", "contract_reports" };
 
@@ -204,7 +203,7 @@ namespace ArendaPro
                     });
                 }
             }
-            else if (userRole == "администратор")
+            else if (userRole == "admin")
             {
                 try
                 {
@@ -216,12 +215,12 @@ namespace ArendaPro
                     {
                         conn.Open();
                         string query = @"
-                    SELECT table_name 
-                    FROM information_schema.tables 
-                    WHERE table_schema = 'public' 
-                      AND table_type = 'BASE TABLE';";
+                    SELECT table_name
+FROM information_schema.tables
+WHERE table_type = 'BASE TABLE'
+  AND table_schema = 'dbo';";
 
-                        using (var cmd = new NpgsqlCommand(query, conn))
+                        using (var cmd = new SqlCommand(query, conn))
                         using (var reader = cmd.ExecuteReader())
                         {
                             while (reader.Read())
@@ -423,7 +422,7 @@ namespace ArendaPro
 
             if (!(FilterColumnComboBox.SelectedItem is ComboBoxItem cbItem))
                 return;
-            string column = cbItem.Tag.ToString();      
+            string column = cbItem.Tag.ToString();
             string cond = (FilterConditionComboBox.SelectedItem as ComboBoxItem)?.Content?.ToString();
             string val = FilterValueBox.Text.Trim();
             if (string.IsNullOrEmpty(val)) return;
@@ -457,7 +456,7 @@ namespace ArendaPro
                     (end_date BETWEEN @startDate AND @endDate)
                 )";
 
-                    using (var cmd = new NpgsqlCommand(query, conn))
+                    using (var cmd = new SqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@carId", carId);
                         cmd.Parameters.AddWithValue("@startDate", startDate);
@@ -483,7 +482,7 @@ namespace ArendaPro
         }
         private void Table_BD_Closed(object sender, EventArgs e)
         {
-            parentWindow.Show(); 
+            parentWindow.Show();
         }
         private void TablesList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -504,7 +503,7 @@ namespace ArendaPro
         }
         private void RegisterEmployeeButton_Click(object sender, RoutedEventArgs e)
         {
-            var registrationWindow = new RegisterUserWindow(); 
+            var registrationWindow = new RegisterUserWindow();
             registrationWindow.ShowDialog();
 
             if (selectedTable == "users")
@@ -527,10 +526,10 @@ SELECT
     r.report_date,
     r.condition_after AS car_state,
     r.early_reason AS early_reason,
-    u.last_name || ' ' || u.first_name || ' ' || u.middle_name AS author
-FROM public.contract_reports r
-JOIN public.contracts c ON c.id = r.contract_id
-JOIN public.users u     ON u.id = r.author_id
+    u.last_name + ' ' + u.first_name + ' ' + u.middle_name AS author
+FROM dbo.contract_reports r
+JOIN dbo.contracts c ON c.id = r.contract_id
+JOIN dbo.users u     ON u.id = r.author_id
 ORDER BY r.report_date DESC;
 ");
                     DataTableGrid.Columns.Clear();
@@ -585,39 +584,41 @@ ORDER BY r.report_date DESC;
                     {
                         table = db.ExecuteQuery(@"
                     SELECT c.id, c.marka, c.gos_nomer, c.vin, c.status,
-                           c.registr_svidetelstva, c.cvet, c.god_vipuska, c.pts,
-                           c.owner_id, c.tariff_id
-                    FROM public.cars c;");
+       c.registr_svidetelstva, c.cvet, c.god_vipuska, c.pts,
+       c.owner_id, c.tariff_id
+FROM dbo.cars c;");
                     }
                     else
                     {
                         table = db.ExecuteQuery(@"
                     SELECT 
-                        c.id,
-                        c.marka,
-                        c.gos_nomer,
-                        c.vin,
-                        c.status,
-                        c.registr_svidetelstva,
-                        c.cvet,
-                        c.god_vipuska,
-                        c.pts,
-                        co.last_name || ' ' || co.first_name || ' ' || co.middle_name AS owner_name,
-                        t.daily_rate AS tariff_rate
-                    FROM public.cars c
-                    LEFT JOIN public.car_owners co ON c.owner_id = co.id
-                    LEFT JOIN public.tariffs t     ON c.tariff_id = t.id;");
+    c.id,
+    c.marka,
+    c.gos_nomer,
+    c.vin,
+    c.status,
+    c.registr_svidetelstva,
+    c.cvet,
+    c.god_vipuska,
+    c.pts,
+    ISNULL(co.last_name, '') + ' ' +
+    ISNULL(co.first_name, '') + ' ' +
+    ISNULL(co.middle_name, '') AS owner_name,
+    t.daily_rate AS tariff_rate
+FROM dbo.cars c
+LEFT JOIN dbo.car_owners co ON c.owner_id = co.id
+LEFT JOIN dbo.tariffs t     ON c.tariff_id = t.id;");
                     }
                 }
                 else if (tableName == "tariffs")
                 {
                     table = db.ExecuteQuery(@"
                 SELECT id, name, daily_rate
-                FROM public.tariffs;");
+FROM dbo.tariffs;");
                 }
                 else
                 {
-                    table = db.ExecuteQuery($"SELECT * FROM public.\"{tableName}\";");
+                    table = db.ExecuteQuery($"SELECT * FROM dbo.\"{tableName}\";");
                 }
 
                 if (tableName == "cars")
@@ -781,7 +782,7 @@ ORDER BY r.report_date DESC;
                     using (var conn = db.GetConnection())
                     {
                         conn.Open();
-                        using (var cmd = new NpgsqlCommand("SELECT id FROM public.tariffs ORDER BY id LIMIT 1", conn))
+                        using (var cmd = new SqlCommand("SELECT TOP (1) id\r\nFROM dbo.tariffs\r\nORDER BY id;", conn))
                             defaultTariffId = Convert.ToInt32(cmd.ExecuteScalar());
                     }
                     newRow["tariff_id"] = defaultTariffId;
@@ -820,7 +821,7 @@ ORDER BY r.report_date DESC;
 
                     var existingTables = new HashSet<string>();
 
-                    using (var checkCmd = new NpgsqlCommand("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'", conn))
+                    using (var checkCmd = new SqlCommand("SELECT table_name\r\nFROM information_schema.tables\r\nWHERE table_schema = 'dbo';'", conn))
                     using (var reader = checkCmd.ExecuteReader())
                     {
                         while (reader.Read())
@@ -829,15 +830,15 @@ ORDER BY r.report_date DESC;
                         }
                     }
 
-                    foreach (var tableName in loadedTables.Keys.ToList()) 
+                    foreach (var tableName in loadedTables.Keys.ToList())
                     {
                         DataTable table = loadedTables[tableName];
 
                         if (!existingTables.Contains(tableName))
                             continue;
 
-                        var adapter = new NpgsqlDataAdapter($"SELECT * FROM \"{tableName}\"", conn);
-                        var builder = new NpgsqlCommandBuilder(adapter);
+                        var adapter = new SqlDataAdapter($"SELECT * FROM \"{tableName}\"", conn);
+                        var builder = new SqlCommandBuilder(adapter);
 
                         adapter.Update(table);
 
@@ -880,8 +881,15 @@ ORDER BY r.report_date DESC;
                     var con = db.GetConnection();
                     con.Open();
 
-                    string query = $"CREATE TABLE IF NOT EXISTS \"{realName}\" (id SERIAL PRIMARY KEY)";
-                    using (var cmd = new NpgsqlCommand(query, con))
+                    string query = $@"
+IF OBJECT_ID('dbo.{realName}', 'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.{realName} (
+        id INT IDENTITY(1,1) PRIMARY KEY
+    )
+END";
+
+                    using (var cmd = new SqlCommand(query, con))
                     {
                         cmd.ExecuteNonQuery();
                     }
@@ -891,7 +899,6 @@ ORDER BY r.report_date DESC;
                         Content = displayName,
                         Tag = realName
                     });
-
                     tableNameDisplayMap[realName] = displayName;
 
                     MessageBox.Show($"Таблица '{displayName}' создана");
@@ -910,16 +917,24 @@ ORDER BY r.report_date DESC;
             {
                 string tableName = selectedItem.Tag.ToString();
 
-                var result = MessageBox.Show($"Удалить таблицу \"{tableName}\"?", "Подтверждение", MessageBoxButton.YesNo);
+                var result = MessageBox.Show(
+                    $"Удалить таблицу \"{tableName}\"?",
+                    "Подтверждение",
+                    MessageBoxButton.YesNo
+                );
+
                 if (result == MessageBoxResult.Yes)
                 {
                     try
                     {
-                        string query = $"DROP TABLE IF EXISTS \"{tableName}\";";
+                        string query = $@"
+IF OBJECT_ID('dbo.{tableName}', 'U') IS NOT NULL
+    DROP TABLE dbo.{tableName};
+";
+
                         db.ExecuteQuery(query);
 
-
-                        TablesList.Items.Remove(selectedItem); 
+                        TablesList.Items.Remove(selectedItem);
                         DataTableGrid.Columns.Clear();
                         DataTableGrid.ItemsSource = null;
                         selectedTable = null;
@@ -952,9 +967,8 @@ ORDER BY r.report_date DESC;
                 return;
             }
 
-
-
             string tableName;
+
             if (TablesList.SelectedItem is ListBoxItem selectedItem && selectedItem.Tag is string tag)
             {
                 tableName = tag;
@@ -966,6 +980,7 @@ ORDER BY r.report_date DESC;
             }
 
             var dialog = new AddColumnDialog { Owner = this };
+
             if (dialog.ShowDialog() == true)
             {
                 try
@@ -973,15 +988,20 @@ ORDER BY r.report_date DESC;
                     using (var conn = db.GetConnection())
                     {
                         conn.Open();
-                        string query = $"ALTER TABLE \"{tableName}\" ADD COLUMN \"{dialog.ColumnName}\" {dialog.DataType};";
-                        using (var cmd = new NpgsqlCommand(query, conn))
+
+                        string query = $@"
+ALTER TABLE dbo.{tableName}
+ADD {dialog.ColumnName} {dialog.DataType};
+";
+
+                        using (var cmd = new SqlCommand(query, conn))
                         {
                             cmd.ExecuteNonQuery();
                         }
                     }
 
                     MessageBox.Show("Столбец успешно добавлен.");
-                    LoadTable(tableName); 
+                    LoadTable(tableName);
                 }
                 catch (Exception ex)
                 {
@@ -993,62 +1013,70 @@ ORDER BY r.report_date DESC;
 
         private void DeleteColumn_Click(object sender, RoutedEventArgs e)
         {
-            if (userRole == "администратор")
+            if (userRole != "администратор")
             {
-                if (selectedTable == null)
+                MessageBox.Show("Нет прав на выполнение операции.");
+                return;
+            }
+
+            if (selectedTable == null)
+            {
+                MessageBox.Show("Сначала выберите таблицу.");
+                return;
+            }
+
+            if (currentTable == null)
+            {
+                MessageBox.Show("Нет загруженной таблицы.");
+                return;
+            }
+
+            var columnNames = new List<string>();
+
+            foreach (DataColumn col in currentTable.Columns)
+            {
+                columnNames.Add(col.ColumnName);
+            }
+
+            var dialog = new SelectColumnDialog(columnNames) { Owner = this };
+
+            if (dialog.ShowDialog() == true)
+            {
+                string columnName = dialog.SelectedColumn;
+
+                var confirm = MessageBox.Show(
+                    $"Удалить столбец '{columnName}' из таблицы '{selectedTable}'?",
+                    "Подтверждение",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Warning
+                );
+
+                if (confirm == MessageBoxResult.Yes)
                 {
-                    MessageBox.Show("Сначала выберите таблицу.");
-                    return;
-                }
-
-                if (currentTable == null)
-                {
-                    MessageBox.Show("Нет загруженной таблицы.");
-                    return;
-                }
-
-                var columnNames = new List<string>();
-                foreach (DataColumn col in currentTable.Columns)
-                {
-                    columnNames.Add(col.ColumnName);
-                }
-
-                var dialog = new SelectColumnDialog(columnNames) { Owner = this }; 
-                if (dialog.ShowDialog() == true)
-                {
-                    string columnName = dialog.SelectedColumn;
-
-                    var confirm = MessageBox.Show($"Удалить столбец '{columnName}' из таблицы '{selectedTable}'?",
-                                                  "Подтверждение",
-                                                  MessageBoxButton.YesNo,
-                                                  MessageBoxImage.Warning);
-
-                    if (confirm == MessageBoxResult.Yes)
+                    try
                     {
-                        try
+                        using (var conn = db.GetConnection())
                         {
-                            using (var conn = db.GetConnection())
-                            {
-                                conn.Open();
-                                string query = $"ALTER TABLE \"{selectedTable}\" DROP COLUMN \"{columnName}\";";
-                                using (var cmd = new NpgsqlCommand(query, conn))
-                                {
-                                    cmd.ExecuteNonQuery();
-                                }
-                            }
+                            conn.Open();
 
-                            MessageBox.Show($"Столбец '{columnName}' удалён.");
-                            LoadTable(selectedTable); 
+                            string query = $@"
+ALTER TABLE dbo.{selectedTable}
+DROP COLUMN {columnName};
+";
+
+                            using (var cmd = new SqlCommand(query, conn))
+                            {
+                                cmd.ExecuteNonQuery();
+                            }
                         }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show($"Ошибка при удалении столбца: {ex.Message}");
-                        }
+
+                        MessageBox.Show($"Столбец '{columnName}' удалён.");
+                        LoadTable(selectedTable);
                     }
-                }
-                else
-                {
-                    MessageBox.Show($"у {userRole} нет прав на добавление столбца");
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Ошибка при удалении столбца: {ex.Message}");
+                    }
                 }
             }
         }
@@ -1068,10 +1096,12 @@ ORDER BY r.report_date DESC;
             }
 
             var columnNames = new List<string>();
+
             foreach (DataColumn col in currentTable.Columns)
                 columnNames.Add(col.ColumnName);
 
             var dialog = new EditColumnDialog(columnNames) { Owner = this };
+
             if (dialog.ShowDialog() == true)
             {
                 string oldName = dialog.SelectedColumn;
@@ -1084,15 +1114,24 @@ ORDER BY r.report_date DESC;
                     {
                         conn.Open();
 
-                        var cmd1 = new NpgsqlCommand($"ALTER TABLE \"{selectedTable}\" RENAME COLUMN \"{oldName}\" TO \"{newName}\";", conn);
+                        // 1. Rename column (MSSQL way)
+                        var cmd1 = new SqlCommand($@"
+EXEC sp_rename 'dbo.{selectedTable}.{oldName}', '{newName}', 'COLUMN';
+", conn);
+
                         cmd1.ExecuteNonQuery();
 
-                        var cmd2 = new NpgsqlCommand($"ALTER TABLE \"{selectedTable}\" ALTER COLUMN \"{newName}\" TYPE {newType};", conn);
+                        // 2. Change type
+                        var cmd2 = new SqlCommand($@"
+ALTER TABLE dbo.{selectedTable}
+ALTER COLUMN {newName} {newType};
+", conn);
+
                         cmd2.ExecuteNonQuery();
                     }
 
                     MessageBox.Show("Столбец обновлён.");
-                    LoadTable(selectedTable); 
+                    LoadTable(selectedTable);
                 }
                 catch (Exception ex)
                 {
@@ -1103,6 +1142,7 @@ ORDER BY r.report_date DESC;
         private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             _lastSearch = SearchBox.Text.Trim();
+
             if (currentTable == null)
                 return;
 
@@ -1110,24 +1150,24 @@ ORDER BY r.report_date DESC;
 
             if (string.IsNullOrWhiteSpace(filterText))
             {
-                DataTableGrid.ItemsSource = currentTable.DefaultView;
+                currentTable.DefaultView.RowFilter = "";
                 return;
             }
 
             try
             {
+                string escaped = filterText.Replace("'", "''");
 
                 var filterConditions = new List<string>();
+
                 foreach (DataColumn column in currentTable.Columns)
                 {
-                    if (column.DataType == typeof(string) || column.DataType == typeof(int))
-                    {
-                        filterConditions.Add($"CONVERT([{column.ColumnName}], 'System.String') LIKE '%{filterText}%'");
-                    }
+                    filterConditions.Add(
+                        $"CONVERT([{column.ColumnName}], System.String) LIKE '%{escaped}%'"
+                    );
                 }
 
-                string filterExpression = string.Join(" OR ", filterConditions);
-                currentTable.DefaultView.RowFilter = filterExpression;
+                currentTable.DefaultView.RowFilter = string.Join(" OR ", filterConditions);
             }
             catch (Exception ex)
             {
@@ -1139,6 +1179,12 @@ ORDER BY r.report_date DESC;
         {
             this.Close();
         }
+
+        private void DataTableGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
     }
+    
 
 }
