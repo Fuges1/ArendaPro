@@ -50,9 +50,9 @@ namespace ArendaPro
         {
             switch (role.ToLower())
             {
-                case "администратор":
+                case "admin":
                     break;
-                case "менеджер":
+                case "manager":
                     break;
                 default:
                     break;
@@ -84,7 +84,7 @@ namespace ArendaPro
         private void Button_tarifi_Click(object sender, RoutedEventArgs e)
         {
             bool isAdmin = string.Equals(CurrentSession.Role,
-                              "администратор",
+                              "admin",
                               StringComparison.OrdinalIgnoreCase);
 
             var win = new Tarifi(isAdmin);

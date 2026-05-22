@@ -148,7 +148,7 @@ WHEN EXISTS (
 THEN CAST(1 AS BIT)
 ELSE CAST(0 AS BIT)
 END
-            )", new { carId, startDate, endDate });
+            ", new { carId, startDate, endDate });
             }
             catch (Exception ex)
             {
@@ -594,17 +594,18 @@ SELECT SCOPE_IDENTITY();", conn);
                     insertCmd.Parameters.AddWithValue("price", dailyRate);
                     insertCmd.Parameters.AddWithValue("path", savePath);
 
-                    int contractId = (int)await insertCmd.ExecuteScalarAsync();
+                    int contractId = Convert.ToInt32(await insertCmd.ExecuteScalarAsync());
                     using (var docCmd = new SqlCommand(@"
-    INSERT INTO public.contracts_docs (
-        contract_id,
-        doc_path,
-        doc_type
-    ) VALUES (
-        @cid,
-        @path,
-        @type
-    );", conn))
+    INSERT INTO contracts_docs (
+    contract_id,
+    doc_path,
+    doc_type
+)
+VALUES (
+    @cid,
+    @path,
+    @type
+);", conn))
                     {
                         docCmd.Parameters.AddWithValue("@cid", contractId);
                         docCmd.Parameters.AddWithValue("@path", savePath);

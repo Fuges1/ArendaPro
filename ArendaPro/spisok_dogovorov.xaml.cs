@@ -211,7 +211,7 @@ namespace ArendaPro
             FilterColumnBox.SelectedIndex = 0;
             FilterOpBox.SelectedIndex = 0;
 
-            IsAdmin = userRole == "администратор";
+            IsAdmin = userRole == "admin";
             FileColumn.Visibility = IsAdmin
     ? Visibility.Visible
     : Visibility.Collapsed;

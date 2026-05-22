@@ -259,7 +259,7 @@ WHERE table_type = 'BASE TABLE'
             foreach (var col in DataTableGrid.Columns)
                 if (col is DataGridBoundColumn c) c.IsReadOnly = true;
 
-            if (userRole == "администратор")
+            if (userRole == "admin")
             {
                 AddRowButton.Visibility =
                 DeleteRowButton.Visibility =
@@ -489,7 +489,7 @@ WHERE table_type = 'BASE TABLE'
             if (TablesList.SelectedItem is ListBoxItem item && item.Tag is string realTableName)
             {
                 selectedTable = realTableName;
-                if (userRole == "администратор" && realTableName == "users")
+                if (userRole == "admin" && realTableName == "users")
                 {
                     RegisterEmployeeButton.Visibility = Visibility.Visible;
                 }
@@ -580,7 +580,7 @@ ORDER BY r.report_date DESC;
 
                 if (tableName == "cars")
                 {
-                    if (userRole == "администратор")
+                    if (userRole == "admin")
                     {
                         table = db.ExecuteQuery(@"
                     SELECT c.id, c.marka, c.gos_nomer, c.vin, c.status,
@@ -618,7 +618,7 @@ FROM dbo.tariffs;");
                 }
                 else
                 {
-                    table = db.ExecuteQuery($"SELECT * FROM dbo.\"{tableName}\";");
+                    table = db.ExecuteQuery($"SELECT * FROM dbo.[{tableName}]");
                 }
 
                 if (tableName == "cars")
@@ -821,41 +821,50 @@ FROM dbo.tariffs;");
 
                     var existingTables = new HashSet<string>();
 
-                    using (var checkCmd = new SqlCommand("SELECT table_name\r\nFROM information_schema.tables\r\nWHERE table_schema = 'dbo';'", conn))
-                    using (var reader = checkCmd.ExecuteReader())
+                    using (var cmd = new SqlCommand(@"
+                SELECT table_name 
+                FROM information_schema.tables 
+                WHERE table_schema = 'dbo'", conn))
+                    using (var reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
-                        {
                             existingTables.Add(reader.GetString(0));
-                        }
                     }
 
-                    foreach (var tableName in loadedTables.Keys.ToList())
+                    foreach (var kv in loadedTables.ToList())
                     {
-                        DataTable table = loadedTables[tableName];
+                        string tableName = kv.Key;
+                        DataTable table = kv.Value;
 
                         if (!existingTables.Contains(tableName))
                             continue;
 
-                        var adapter = new SqlDataAdapter($"SELECT * FROM \"{tableName}\"", conn);
+                        // 🔥 MSSQL-правильный вариант
+                        var adapter = new SqlDataAdapter(
+                            $"SELECT * FROM dbo.[{tableName}]", conn);
+
                         var builder = new SqlCommandBuilder(adapter);
+
+                        adapter.MissingSchemaAction = MissingSchemaAction.AddWithKey;
 
                         adapter.Update(table);
 
-                        string refreshQuery = $"SELECT * FROM \"{tableName}\";";
-                        var refreshedTable = db.ExecuteQuery(refreshQuery);
-                        loadedTables[tableName] = refreshedTable;
+                        // обновление
+                        var refreshed = db.ExecuteQuery(
+                            $"SELECT * FROM dbo.[{tableName}]");
+
+                        loadedTables[tableName] = refreshed;
 
                         if (selectedTable == tableName)
-                            DataTableGrid.ItemsSource = refreshedTable.DefaultView;
+                            DataTableGrid.ItemsSource = refreshed.DefaultView;
                     }
                 }
 
-                MessageBox.Show("Все изменения во всех загруженных таблицах сохранены.");
+                MessageBox.Show("Изменения сохранены.");
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка при сохранении: {ex.Message}");
+                MessageBox.Show("Ошибка сохранения: " + ex.Message);
             }
         }
 
@@ -932,7 +941,7 @@ IF OBJECT_ID('dbo.{tableName}', 'U') IS NOT NULL
     DROP TABLE dbo.{tableName};
 ";
 
-                        db.ExecuteQuery(query);
+                        db.ExecuteNonQuery(query, null);
 
                         TablesList.Items.Remove(selectedItem);
                         DataTableGrid.Columns.Clear();
@@ -955,7 +964,7 @@ IF OBJECT_ID('dbo.{tableName}', 'U') IS NOT NULL
 
         private void AddColumn_Click(object sender, RoutedEventArgs e)
         {
-            if (userRole != "администратор")
+            if (userRole != "admin")
             {
                 MessageBox.Show("Только администратор может добавлять столбцы.");
                 return;
@@ -993,7 +1002,11 @@ IF OBJECT_ID('dbo.{tableName}', 'U') IS NOT NULL
 ALTER TABLE dbo.{tableName}
 ADD {dialog.ColumnName} {dialog.DataType};
 ";
-
+                        if (!Regex.IsMatch(dialog.ColumnName, @"^[a-zA-Z0-9_]+$"))
+                        {
+                            MessageBox.Show("Некорректное имя столбца.");
+                            return;
+                        }
                         using (var cmd = new SqlCommand(query, conn))
                         {
                             cmd.ExecuteNonQuery();
@@ -1013,7 +1026,7 @@ ADD {dialog.ColumnName} {dialog.DataType};
 
         private void DeleteColumn_Click(object sender, RoutedEventArgs e)
         {
-            if (userRole != "администратор")
+            if (userRole != "admin")
             {
                 MessageBox.Show("Нет прав на выполнение операции.");
                 return;
@@ -1083,7 +1096,7 @@ DROP COLUMN {columnName};
 
         private void CorectColumn_Click(object sender, RoutedEventArgs e)
         {
-            if (userRole != "администратор")
+            if (userRole != "admin")
             {
                 MessageBox.Show("Редактирование столбцов доступно только админу.");
                 return;
