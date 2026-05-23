@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -547,7 +548,7 @@ ORDER BY c.id ASC;
                                 MessageBoxButton.YesNo) != MessageBoxResult.Yes) return;
 
                 using var tr = database.BeginTransaction();
-                database.ExecuteNonQuery("UPDATE contracts SET status='completed', returned_at=now() WHERE id=@id",
+                database.ExecuteNonQuery("UPDATE contracts SET status='cancelled', returned_at=now() WHERE id=@id",
                                          new Dictionary<string, object> { { "@id", ci.ContractId } });
                 database.ExecuteNonQuery("UPDATE cars SET status='available' WHERE id=@car",
                                          new Dictionary<string, object> { { "@car", ci.CarId } });
@@ -571,7 +572,7 @@ ORDER BY c.id ASC;
             var dlg = new ReturnReportWindow(
                 contractId: ci.ContractId,
                 isEarly: isEarlyReturn,
-                employeeName: currentUserName) 
+                employeeName: currentUserName)
             {
                 Owner = this
             };
@@ -581,25 +582,45 @@ ORDER BY c.id ASC;
 
             string reportPath = dlg.ReportFilePath;
 
-            database.ExecuteNonQuery(
-                @"UPDATE contracts
-SET status = 'completed',
-    returned_at = GETDATE(),
-    return_report_path = @path
-WHERE id = @id",
-                new Dictionary<string, object>
-                {
-                    ["@id"] = ci.ContractId,
-                    ["@path"] = reportPath
-                });
+            using var tr = database.BeginTransaction();
 
-            database.ExecuteNonQuery(
-                "UPDATE cars SET status = 'available' WHERE id = @car",
-                new Dictionary<string, object> { ["@car"] = ci.CarId });
+            try
+            {
+                // 1. Завершаем договор (НЕ cancelled)
+                database.ExecuteNonQuery(
+                    @"UPDATE contracts
+              SET status = 'completed',
+                  returned_at = GETDATE(),
+                  return_report_path = @path
+              WHERE id = @id",
+                    new Dictionary<string, object>
+                    {
+                        ["@id"] = ci.ContractId,
+                        ["@path"] = reportPath
+                    });
 
-            MessageBox.Show("Аренда завершена, отчёт сохранён.", "Готово",
-                           MessageBoxButton.OK, MessageBoxImage.Information);
-            LoadContracts();
+                // 2. Освобождаем машину
+                database.ExecuteNonQuery(
+                    "UPDATE cars SET status = 'available' WHERE id = @car",
+                    new Dictionary<string, object>
+                    {
+                        ["@car"] = ci.CarId
+                    });
+
+                tr.Commit();
+
+                MessageBox.Show("Аренда завершена, отчёт сохранён.",
+                    "Готово",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+
+                LoadContracts();
+            }
+            catch (Exception ex)
+            {
+                tr.Rollback();
+                MessageBox.Show("Ошибка завершения: " + ex.Message);
+            }
         }
         private void Pay_Click(object s, RoutedEventArgs e)
         {
@@ -848,16 +869,27 @@ WHERE id = @id",
                     {
                         try
                         {
+                           database.ExecuteNonQuery(
+    @"UPDATE contracts
+      SET status = 'cancelled',
+          cancel_date = @now
+      WHERE id = @id",
+    new Dictionary<string, object>
+    {
+        ["@id"] = contract.ContractId,
+        ["@now"] = DateTime.Now
+    });
                             database.ExecuteNonQuery(
-     "UPDATE contracts SET status = 'cancelled', cancel_date = @now WHERE id = @id",
-     new Dictionary<string, object> {
-        { "@id", contract.ContractId },
-        { "@now", DateTime.Now }
+     @"DELETE FROM car_occupations
+      WHERE car_id = @carId
+        AND start_date = @startDate
+        AND end_date = @endDate",
+     new Dictionary<string, object>
+     {
+        { "@carId", carId },
+        { "@startDate", startDate },
+        { "@endDate", endDate }
      });
-                            database.ExecuteNonQuery(
-                                "DELETE FROM car_occupations " +
-                                "WHERE car_id = @carId AND start_date = @startDate AND end_date = @endDate",
-                                new Dictionary<string, object> { { "@carId", carId }, { "@startDate", startDate }, { "@endDate", endDate } });
 
                             database.ExecuteNonQuery(
                                 "UPDATE cars SET status = 'available' WHERE id = @carId",

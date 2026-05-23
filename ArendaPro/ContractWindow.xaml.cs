@@ -112,18 +112,24 @@ namespace ArendaPro
             try
             {
                 return await db.ExecuteScalarAsync<bool>(@"
-            SELECT CASE 
+SELECT CASE 
 WHEN EXISTS (
     SELECT 1
     FROM contracts
     WHERE car_id = @carId
-      AND status != 'cancelled'
+      AND status = 'active'
       AND start_date <= @endDate
       AND end_date >= @startDate
 )
 THEN CAST(0 AS BIT)
 ELSE CAST(1 AS BIT)
-END", new { carId, startDate, endDate });
+END",
+        new
+        {
+            carId,
+            startDate,
+            endDate
+        });
             }
             catch (Exception ex)
             {
@@ -131,31 +137,7 @@ END", new { carId, startDate, endDate });
                 return false;
             }
         }
-        private async Task<bool> IsPendingContractExists(int carId, DateTime startDate, DateTime endDate)
-        {
-            try
-            {
-                return await db.ExecuteScalarAsync<bool>(@"
-            SELECT CASE 
-WHEN EXISTS (
-    SELECT 1
-    FROM contracts
-    WHERE car_id = @carId
-      AND status = 'not_confirmed'
-      AND start_date <= @endDate
-      AND end_date >= @startDate
-)
-THEN CAST(1 AS BIT)
-ELSE CAST(0 AS BIT)
-END
-            ", new { carId, startDate, endDate });
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ошибка проверки наличия договора: {ex.Message}");
-                return true;  
-            }
-        }
+       
         private bool ValidateDateTime()
         {
 
@@ -394,12 +376,6 @@ ORDER BY start_date DESC;", conn);
                 if (!lastValidStartDate.HasValue || !lastValidEndDate.HasValue)
                 {
                     MessageBox.Show("Неверные даты аренды");
-                    return;
-                }
-
-                if (await IsPendingContractExists(carId, lastValidStartDate.Value, lastValidEndDate.Value))
-                {
-                    MessageBox.Show("На выбранные даты уже сформирован договор, ожидающий подтверждения.");
                     return;
                 }
 

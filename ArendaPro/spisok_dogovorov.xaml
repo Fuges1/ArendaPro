@@ -218,6 +218,11 @@
                                             Visibility="{Binding Status, Converter={StaticResource StatusToToggleVisibilityConverter}}"
                                             Click="ConfirmContract_Click"/>
                                         <Button
+                                            Content="Отменить"
+                                            Style="{StaticResource ModernButton}"
+                                            Visibility="{Binding Status, Converter={StaticResource StatusToToggleVisibilityConverter}}"
+                                            Click="CancelConfirm_Click"/>
+                                        <Button
                                             Content="Продлить"
                                             Style="{StaticResource ModernButton}"
                                             Visibility="{Binding CanProlong, Converter={StaticResource BoolToVisibilityConverter}}"
@@ -227,6 +232,7 @@
                                             Style="{StaticResource ModernButton}"
                                             Visibility="{Binding Status, Converter={StaticResource StatusToCompleteVisibilityConverter}}"
                                             Click="CompleteRental_Click"/>
+
                                         <Button
                                             Content="Открыть"
                                             Style="{StaticResource ModernButton}"
