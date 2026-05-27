@@ -13,7 +13,7 @@ namespace ArendaPro
 
     public partial class OtherOborot : Window
     {
-        private string Fullusername;
+        private readonly string _fullUsername;
         private readonly string connStr = ConfigurationManager.ConnectionStrings["DbConnection"]?.ConnectionString;
         private readonly BD database;
         public static class CurrentSession
@@ -26,7 +26,7 @@ namespace ArendaPro
         }
         public OtherOborot(string Fullname)
         {
-            Fullusername = Fullname;
+            _fullUsername = Fullname;
             InitializeComponent();
             database = new BD(connStr);
             DateFrom.SelectedDate = DateTime.Today.AddMonths(-1);
@@ -201,7 +201,7 @@ namespace ArendaPro
                 visibleColumns,
                 from,
                 to,
-                Fullusername,
+                _fullUsername,
                 summaryText
             );
 
@@ -370,4 +370,3 @@ ORDER BY c.start_date DESC;
         }
     }
 }
-

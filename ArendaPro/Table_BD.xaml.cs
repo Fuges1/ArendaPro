@@ -14,15 +14,15 @@ namespace ArendaPro
     public partial class Table_BD : Window
     {
         private string _lastSearch = "";
-        private Stack<string> ddlUndoStack = new();
-        private Dictionary<string, Stack<DataTable>> undoStacks = new();
-        private BD db;
+        private readonly Stack<string> ddlUndoStack = new();
+        private readonly Dictionary<string, Stack<DataTable>> undoStacks = new();
+        private readonly BD db;
         private string selectedTable;
         private DataTable currentTable;
-        private string userRole;
-        private Dictionary<string, DataTable> loadedTables = new();
-        private Window parentWindow;
-        private Dictionary<string, string> tableNameDisplayMap = new()
+        private readonly string userRole;
+        private readonly Dictionary<string, DataTable> loadedTables = new();
+        private readonly Window parentWindow;
+        private readonly Dictionary<string, string> tableNameDisplayMap = new()
         {
             { "users", "Сотрудники" },
             { "cars", "Автомобили" },
