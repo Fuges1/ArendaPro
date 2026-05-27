@@ -4,17 +4,14 @@ using System.Windows;
 namespace ArendaPro
 {
 
+    // Логика класса: InputDialog содержит сценарии этого модуля, управляет данными и координирует взаимодействие UI с сервисами.
     public partial class InputDialog : Window
     {
-        public string InputText { get; private set; }
-
-        public InputDialog()
-        {
-            InitializeComponent();
-        }
+        public InputDialog() => InitializeComponent();
         public string RealName { get; private set; }
         public string DisplayName { get; private set; }
 
+        // Метод Ok_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #1).
         private void Ok_Click(object sender, RoutedEventArgs e)
         {
             string realName = tableNameRealTextBox.Text.Trim();
@@ -40,6 +37,7 @@ namespace ArendaPro
         }
 
 
+        // Метод Cancel_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #2).
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
             DialogResult = false;

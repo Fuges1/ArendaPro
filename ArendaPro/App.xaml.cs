@@ -2,6 +2,7 @@
 
 namespace ArendaPro
 {
+    // Логика класса: App содержит сценарии этого модуля, управляет данными и координирует взаимодействие UI с сервисами.
     public partial class App : Application
     {
 

@@ -8,8 +8,10 @@ using static ArendaPro.OtherOborot;
 using System.Data.SqlClient;
 namespace ArendaPro
 {
+    // Логика класса: LoginWindow содержит сценарии этого модуля, управляет данными и координирует взаимодействие UI с сервисами.
     public partial class LoginWindow : Window
     {
+        // Логика класса: UserData содержит сценарии этого модуля, управляет данными и координирует взаимодействие UI с сервисами.
         public class UserData
         {
             public int UserId { get; set; }
@@ -28,10 +30,11 @@ namespace ArendaPro
             ConfigurationManager.ConnectionStrings["DbConnection"]?.ConnectionString;
 
         private MainWindow mainWindow;
-        private bool _isLoggingIn = false;
+        private bool _isLoggingIn;
 
         public LoginWindow() => InitializeComponent();
 
+        // Метод LoginButton_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #1).
         private async void LoginButton_Click(object sender, RoutedEventArgs e)
         {
             if (_isLoggingIn) return;
@@ -40,6 +43,7 @@ namespace ArendaPro
 
             try
             {
+                // Шаг 1: забираем ввод пользователя из UI и нормализуем пробелы.
                 string username = txtUsername.Text.Trim();
                 string password = txtPassword.Password.Trim();
 
@@ -49,6 +53,13 @@ namespace ArendaPro
                     return;
                 }
 
+                if (string.IsNullOrWhiteSpace(connectionString))
+                {
+                    ShowError("Строка подключения к БД не настроена.");
+                    return;
+                }
+
+                // Шаг 2: открываем соединение только после базовых валидаций формы.
                 using var conn = new SqlConnection(connectionString);
                 await conn.OpenAsync();
 
@@ -58,11 +69,13 @@ namespace ArendaPro
                     return;
                 }
 
+                // Шаг 3: получаем пароль из БД и определяем формат хеша.
                 var (storedPwd, isBcrypt) = await GetPasswordWithDiagnostics(conn, username);
                 bool isValid = isBcrypt
                     ? BCrypt.Net.BCrypt.Verify(password, storedPwd)
                     : password == storedPwd;
 
+                // Шаг 4: при успешном входе мигрируем legacy-пароль на bcrypt без участия пользователя.
                 if (!isBcrypt && isValid)
                     await UpgradePasswordToBcrypt(conn, username, password);
 
@@ -88,18 +101,23 @@ namespace ArendaPro
             }
         }
 
+        // Логика: метод txtUsername_TextChanged реализует отдельный шаг бизнес-логики, связывая входные данные, проверки и итоговое действие.
+        // Метод txtUsername_TextChanged: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #2).
         private void txtUsername_TextChanged(object sender, TextChangedEventArgs e) =>
             txtUsernamePlaceholder.Visibility =
                 string.IsNullOrWhiteSpace(txtUsername.Text)
                     ? Visibility.Visible
                     : Visibility.Collapsed;
 
+        // Логика: метод txtPassword_PasswordChanged реализует отдельный шаг бизнес-логики, связывая входные данные, проверки и итоговое действие.
+        // Метод txtPassword_PasswordChanged: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #3).
         private void txtPassword_PasswordChanged(object sender, RoutedEventArgs e) =>
             txtPasswordPlaceholder.Visibility =
                 string.IsNullOrWhiteSpace(txtPassword.Password)
                     ? Visibility.Visible
                     : Visibility.Collapsed;
 
+        // Метод SetUiEnabled: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #4).
         private void SetUiEnabled(bool enabled)
         {
             LoginButton.IsEnabled = enabled;
@@ -107,20 +125,24 @@ namespace ArendaPro
             txtPassword.IsEnabled = enabled;
         }
 
+        // Метод ShowError: открывает/отображает следующий экранный контекст и передаёт туда необходимые данные текущей операции (комментарий #5).
         private void ShowError(string msg)
         {
             ErrorTextBlock.Text = msg;
             ErrorTextBlock.Visibility = Visibility.Visible;
         }
 
+        // Логика: метод IsBcryptHash реализует отдельный шаг бизнес-логики, связывая входные данные, проверки и итоговое действие.
+        // Метод IsBcryptHash: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #6).
         private bool IsBcryptHash(string s) =>
           !string.IsNullOrEmpty(s) &&
           (s.StartsWith("$2a$") || s.StartsWith("$2b$") || s.StartsWith("$2y$"));
+        // Метод CheckUserExists: проводит целевую валидацию условий и сообщает, можно ли безопасно продолжать сценарий (комментарий #7).
         private async Task<bool> CheckUserExists(SqlConnection conn, string username)
         {
             using var cmd = new SqlCommand(
                 "SELECT 1 FROM users WHERE username = @username", conn);
-            cmd.Parameters.AddWithValue("username", username);
+            cmd.Parameters.AddWithValue("@username", username);
             return (await cmd.ExecuteScalarAsync()) != null;
         }
 
@@ -129,7 +151,7 @@ namespace ArendaPro
         {
             using var cmd = new SqlCommand(
                 "SELECT password FROM users WHERE username = @username", conn);
-            cmd.Parameters.AddWithValue("username", username);
+            cmd.Parameters.AddWithValue("@username", username);
 
             string pwd = (await cmd.ExecuteScalarAsync())?.ToString() ?? string.Empty;
             bool isBC = IsBcryptHash(pwd);
@@ -138,17 +160,19 @@ namespace ArendaPro
             return (pwd, isBC);
         }
 
+        // Метод UpgradePasswordToBcrypt: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #8).
         private async Task UpgradePasswordToBcrypt(
             SqlConnection conn, string username, string plainPwd)
         {
             string hash = BCrypt.Net.BCrypt.HashPassword(plainPwd);
             using var cmd = new SqlCommand(
                 "UPDATE users SET password = @p WHERE username = @u", conn);
-            cmd.Parameters.AddWithValue("p", hash);
-            cmd.Parameters.AddWithValue("u", username);
+            cmd.Parameters.AddWithValue("@p", hash);
+            cmd.Parameters.AddWithValue("@u", username);
             await cmd.ExecuteNonQueryAsync();
         }
 
+        // Метод GetFullUserData: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #9).
         private async Task<UserData> GetFullUserData(SqlConnection conn, string username)
         {
             const string q = @"
@@ -158,7 +182,7 @@ FROM [users]
 WHERE username = @u";
 
             using var cmd = new SqlCommand(q, conn);
-            cmd.Parameters.AddWithValue("u", username);
+            cmd.Parameters.AddWithValue("@u", username);
 
             using var r = await cmd.ExecuteReaderAsync();
             if (await r.ReadAsync())
@@ -180,6 +204,7 @@ WHERE username = @u";
 
             throw new InvalidOperationException("Данные пользователя не найдены");
         }
+        // Метод OpenMainWindow: открывает/отображает следующий экранный контекст и передаёт туда необходимые данные текущей операции (комментарий #10).
         private void OpenMainWindow(UserData u)
         {
             CurrentSession.UserId = u.UserId;
@@ -189,7 +214,6 @@ WHERE username = @u";
 
             mainWindow = new MainWindow(
                 role: u.Role,
-                username: u.Username,
                 firstName: u.FirstName,
                 middleName: u.MiddleName,
                 lastName: u.LastName,
@@ -203,6 +227,7 @@ WHERE username = @u";
             Hide();
         }
 
+        // Метод ResetForRelogin: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #11).
         public void ResetForRelogin()
         {
             txtPassword.Password = "";

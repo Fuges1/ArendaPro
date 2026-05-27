@@ -4,6 +4,7 @@ using System.Windows;
 namespace ArendaPro
 {
 
+    // Логика класса: EditColumnDialog содержит сценарии этого модуля, управляет данными и координирует взаимодействие UI с сервисами.
     public partial class EditColumnDialog : Window
     {
         public string SelectedColumn => (ColumnSelector.SelectedItem as string) ?? "";
@@ -16,6 +17,7 @@ namespace ArendaPro
             ColumnSelector.ItemsSource = columns;
         }
 
+        // Метод Apply_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #1).
         private void Apply_Click(object sender, RoutedEventArgs e)
         {
             if (ColumnSelector.SelectedItem == null || string.IsNullOrWhiteSpace(NewName) || string.IsNullOrWhiteSpace(NewType))
@@ -28,6 +30,7 @@ namespace ArendaPro
             this.Close();
         }
 
+        // Метод Close_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #2).
         private void Close_Click(object sender, RoutedEventArgs e)
         {
             DialogResult = false;

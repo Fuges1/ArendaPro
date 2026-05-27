@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -14,20 +13,23 @@ using System.Windows.Media;
 using Word = Microsoft.Office.Interop.Word;
 namespace ArendaPro
 {
+    // Логика класса: StringToVisibilityConverter содержит сценарии этого модуля, управляет данными и координирует взаимодействие UI с сервисами.
     public class StringToVisibilityConverter : IValueConverter
     {
+        // Метод Convert: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #1).
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
             => string.IsNullOrWhiteSpace(value as string)
                 ? Visibility.Collapsed
                 : Visibility.Visible;
 
+        // Метод ConvertBack: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #2).
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
             => throw new NotImplementedException();
     }
+    // Логика класса: StatusToDeleteVisibilityConverter содержит сценарии этого модуля, управляет данными и координирует взаимодействие UI с сервисами.
     public class StatusToDeleteVisibilityConverter : IValueConverter
     {
-        public string NameFull;
-
+        // Метод Convert: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #3).
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return (value as string) == "not_confirmed"
@@ -35,14 +37,17 @@ namespace ArendaPro
         : Visibility.Collapsed;
         }
 
+        // Метод ConvertBack: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #4).
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }
     }
+    // Логика класса: StatusToCompleteVisibilityConverter содержит сценарии этого модуля, управляет данными и координирует взаимодействие UI с сервисами.
     public class StatusToCompleteVisibilityConverter : IValueConverter
     {
    
+        // Метод Convert: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #5).
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return (value as string) == "active"
@@ -50,28 +55,34 @@ namespace ArendaPro
                 : Visibility.Collapsed;
         }
 
+        // Метод ConvertBack: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #6).
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotSupportedException();
         }
     }
 
+    // Логика класса: BoolToBrushConverter содержит сценарии этого модуля, управляет данными и координирует взаимодействие UI с сервисами.
     public class BoolToBrushConverter : IValueConverter
     {
         public static BoolToBrushConverter Instance { get; } = new BoolToBrushConverter();
 
+        // Метод Convert: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #7).
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return (bool)value ? Brushes.LightCoral : Brushes.LightGreen;
         }
 
+        // Метод ConvertBack: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #8).
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }
     }
+    // Логика класса: BoolToConfirmCancelButtonConverter содержит сценарии этого модуля, управляет данными и координирует взаимодействие UI с сервисами.
     public class BoolToConfirmCancelButtonConverter : IValueConverter
     {
+        // Метод Convert: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #9).
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             bool isActive = (bool)value;
@@ -79,13 +90,16 @@ namespace ArendaPro
 
         }
 
+        // Метод ConvertBack: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #10).
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return value.ToString() == "Отменить";
         }
     }
+    // Логика класса: StatusToToggleVisibilityConverter содержит сценарии этого модуля, управляет данными и координирует взаимодействие UI с сервисами.
     public class StatusToToggleVisibilityConverter : IValueConverter
     {
+        // Метод Convert: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #11).
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             string status = value as string;
@@ -94,14 +108,17 @@ namespace ArendaPro
                : Visibility.Collapsed;
         }
 
+        // Метод ConvertBack: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #12).
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }
     }
 
+    // Логика класса: AdminAndStatusToVisibilityConverter содержит сценарии этого модуля, управляет данными и координирует взаимодействие UI с сервисами.
     public class AdminAndStatusToVisibilityConverter : IMultiValueConverter
     {
+        // Метод Convert: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #13).
         public object Convert(object[] values, Type t, object p, CultureInfo c)
         {
             bool isAdmin = values.Length > 0 && values[0] is bool b && b;
@@ -113,12 +130,15 @@ namespace ArendaPro
                    ? Visibility.Visible
                    : Visibility.Collapsed;
         }
+        // Метод ConvertBack: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #14).
         public object[] ConvertBack(object v, Type[] tt, object p, CultureInfo c)
             => throw new NotImplementedException();
     }
+    // Логика класса: FileNameConverter содержит сценарии этого модуля, управляет данными и координирует взаимодействие UI с сервисами.
     public class FileNameConverter : IValueConverter
     {
      
+        // Метод Convert: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #15).
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var path = value as string;
@@ -128,15 +148,18 @@ namespace ArendaPro
         }
 
       
+        // Метод ConvertBack: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #16).
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
             => throw new NotSupportedException();
     }
+    // Логика класса: spisok_dogovorov содержит сценарии этого модуля, управляет данными и координирует взаимодействие UI с сервисами.
     public partial class spisok_dogovorov : Window
     {
         private readonly BD database;
         private readonly string connStr;
         private ObservableCollection<ContractInfo> allContracts = new();
         private string role;
+        // Логика класса: ContractInfo содержит сценарии этого модуля, управляет данными и координирует взаимодействие UI с сервисами.
         public class ContractInfo
         {
 
@@ -193,6 +216,29 @@ namespace ArendaPro
                 "completed" => "Завершён",
                 _ => Status
             };
+
+            public string PaymentStatusDisplay => PaymentStatus switch
+            {
+                "paid" => "Оплачен",
+                "unpaid" => "Не оплачен",
+                "refund_pending" => "Возврат в обработке",
+                "refunded" => "Возврат выполнен",
+                _ => string.IsNullOrWhiteSpace(PaymentStatus) ? "—" : PaymentStatus
+            };
+
+            public string ContractStageDisplay => ContractStage switch
+            {
+                "active" => "Активный",
+                "completed" => "Завершён",
+                "completed_early" => "Завершён досрочно",
+                _ => string.IsNullOrWhiteSpace(ContractStage) ? "—" : ContractStage
+            };
+
+            public string ActualReturnDateDisplay => ActualReturnDate.HasValue
+                ? ActualReturnDate.Value.ToString("dd.MM.yyyy HH:mm")
+                : "—";
+
+            public string RefundAmountDisplay => RefundAmount > 0 ? RefundAmount.ToString("N2") : "—";
       
             public decimal BaseAmount => Price;
 
@@ -218,6 +264,9 @@ namespace ArendaPro
             FilterColumnBox.Items.Add(new ComboBoxItem { Content = "ФИО клиента", Tag = nameof(ContractInfo.FullName) });
             FilterColumnBox.Items.Add(new ComboBoxItem { Content = "Автомобиль", Tag = nameof(ContractInfo.CarInfo) });
             FilterColumnBox.Items.Add(new ComboBoxItem { Content = "Статус", Tag = nameof(ContractInfo.StatusDescription) });
+            FilterColumnBox.Items.Add(new ComboBoxItem { Content = "Этап", Tag = nameof(ContractInfo.ContractStageDisplay) });
+            FilterColumnBox.Items.Add(new ComboBoxItem { Content = "Статус оплаты", Tag = nameof(ContractInfo.PaymentStatusDisplay) });
+            FilterColumnBox.Items.Add(new ComboBoxItem { Content = "Сумма возврата", Tag = nameof(ContractInfo.RefundAmount) });
             FilterColumnBox.Items.Add(new ComboBoxItem { Content = "К оплате", Tag = nameof(ContractInfo.DebtAmount) });
 
             FilterColumnBox.SelectedIndex = 0;
@@ -235,6 +284,7 @@ namespace ArendaPro
             MarkExpiredContractsAsCompleted();
             LoadContracts();
         }
+        // Метод Compare: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #17).
         private static bool Compare(ContractInfo c, string col, string op, string val)
         {
             object v = typeof(ContractInfo).GetProperty(col)?.GetValue(c);
@@ -244,16 +294,24 @@ namespace ArendaPro
             {
                 case "=": return v.ToString().Equals(val, StringComparison.OrdinalIgnoreCase);
                 case "≠": return !v.ToString().Equals(val, StringComparison.OrdinalIgnoreCase);
-                case "≥": return decimal.TryParse(v.ToString(), out var d1) && d1 >= decimal.Parse(val);
-                case "≤": return decimal.TryParse(v.ToString(), out var d2) && d2 <= decimal.Parse(val);
+                case "≥":
+                    return decimal.TryParse(v.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out var d1)
+                        && decimal.TryParse(val, NumberStyles.Any, CultureInfo.InvariantCulture, out var f1)
+                        && d1 >= f1;
+                case "≤":
+                    return decimal.TryParse(v.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out var d2)
+                        && decimal.TryParse(val, NumberStyles.Any, CultureInfo.InvariantCulture, out var f2)
+                        && d2 <= f2;
                 default: return v.ToString().IndexOf(val, StringComparison.OrdinalIgnoreCase) >= 0;
             }
         }
+        // Метод ConvertBack: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #18).
         public object ConvertBack(object value, Type t, object p, CultureInfo c)
         {
             return value?.ToString() == "Возврат";
         }
 
+        // Метод LoadContracts: инициализирует состояние модуля при старте: загружает данные и подготавливает элементы экрана к работе (комментарий #19).
         private void LoadContracts()
         {
             try
@@ -419,7 +477,6 @@ ORDER BY c.id ASC;
                     });
                 }
 
-                ContractsGrid.ItemsSource = null;
                 ContractsGrid.ItemsSource = allContracts;
             }
             catch (Exception ex)
@@ -432,6 +489,7 @@ ORDER BY c.id ASC;
                 );
             }
         }
+        // Метод ClearFilter_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #20).
         private void ClearFilter_Click(object sender, RoutedEventArgs e)
         {
 
@@ -442,6 +500,7 @@ ORDER BY c.id ASC;
         }
 
 
+        // Метод OpenReport_Click_ochet: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #21).
         private void OpenReport_Click_ochet(object sender, RoutedEventArgs e)
         {
             if (sender is Button btn && btn.DataContext is ContractInfo ci && !string.IsNullOrEmpty(ci.ReturnReportPath))
@@ -457,6 +516,7 @@ ORDER BY c.id ASC;
                 }
             }
         }
+        // Метод ApplyFilter_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #22).
         private void ApplyFilter_Click(object s, RoutedEventArgs e)
         {
             var col = FilterColumnBox.SelectedItem as ComboBoxItem;
@@ -478,6 +538,7 @@ ORDER BY c.id ASC;
 
             ContractsGrid.ItemsSource = filtered;
         }
+        // Метод MarkExpiredContractsAsCompleted: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #23).
         private void MarkExpiredContractsAsCompleted()
         {
             var now = DateTime.Now;
@@ -510,6 +571,7 @@ ORDER BY c.id ASC;
                 }
             }
         }
+        // Метод ToggleContractStatus_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #24).
         private void ToggleContractStatus_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button btn && btn.DataContext is ContractInfo contract)
@@ -526,22 +588,245 @@ ORDER BY c.id ASC;
         }
 
 
+        // Метод Prolong_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #25).
         private void Prolong_Click(object s, RoutedEventArgs e)
         {
+            if (s is Button btn && btn.DataContext is ContractInfo ci)
+            {
+                var dlg = new DatePickerDialog(ci.EndDate);
+                if (dlg.ShowDialog() == true)
+                {
+                    DateTime newEnd = dlg.SelectedDate;
+                    if (newEnd <= ci.EndDate) { MessageBox.Show("Новая дата должна быть позже."); return; }
+
+                    int extraDays = (newEnd - ci.EndDate).Days;
+                    decimal extraCost = extraDays * ci.Price;       
+                    database.ExecuteNonQuery(
+                        "UPDATE contracts SET end_date = @newEnd, extra_amount = extra_amount + @extra WHERE id = @id",
+                        new Dictionary<string, object>
+                        {
+        { "@newEnd", newEnd      },    
+        { "@extra",  extraCost   },
+        { "@id",     ci.ContractId }
+                        });
+                    var payForExtension = MessageBox.Show(
+    $"Клиент оплатил продление ({extraDays} дн. × {ci.Price:N2} = {extraCost:N2})?",
+    "Оплата продления",
+    MessageBoxButton.YesNo,
+    MessageBoxImage.Question
+) == MessageBoxResult.Yes;
+
+                    if (payForExtension)
+                    {
+                        database.ExecuteNonQuery(
+                            @"INSERT INTO payments(contract_id, pay_type, amount)
+          VALUES (@cid, 'other', @amt);",
+                            new Dictionary<string, object>
+                            {
+                                ["@cid"] = ci.ContractId,
+                                ["@amt"] = extraCost
+                            });
+
+                        database.ExecuteNonQuery(
+                            @"UPDATE contracts
+            SET paid_amount = paid_amount + @amt
+          WHERE id = @cid;",
+                            new Dictionary<string, object>
+                            {
+                                ["@cid"] = ci.ContractId,
+                                ["@amt"] = extraCost
+                            });
+                    }
+                    LoadContracts();
+                }
+            }
+        }
+        private void Return_Click(object s, RoutedEventArgs e)
+        {
+            if (s is Button btn && btn.DataContext is ContractInfo ci)
+            {
+                if (!ci.IsPaid) { MessageBox.Show("Не погашена задолженность!"); return; }
+                DateTime due = ci.EndDate + ci.TimeEnd;    
+                bool early = DateTime.Now < due;
+
+                if (early && MessageBox.Show("Вернуть раньше срока?", "Подтвердите",
+                                MessageBoxButton.YesNo) != MessageBoxResult.Yes) return;
+
+                using var tr = database.BeginTransaction();
+                database.ExecuteNonQuery("UPDATE contracts SET status='cancelled', returned_at=now() WHERE id=@id",
+                                         new Dictionary<string, object> { { "@id", ci.ContractId } });
+                database.ExecuteNonQuery("UPDATE cars SET status='available' WHERE id=@car",
+                                         new Dictionary<string, object> { { "@car", ci.CarId } });
+                tr.Commit();
+                LoadContracts();
+            }
+        }
+        private void OpenReport_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.DataContext is ContractInfo ci && !string.IsNullOrEmpty(ci.ReturnReportPath))
+            {
+                Process.Start(new ProcessStartInfo(ci.ReturnReportPath) { UseShellExecute = true });
+            }
+        }
+        private void CompleteRental_Click(object sender, RoutedEventArgs e)
+        {
+            if (!(sender is Button btn && btn.DataContext is ContractInfo ci)) return;
+
+            bool isEarlyReturn = DateTime.Now < ci.EndDate + ci.TimeEnd;
+            decimal refundAmount = 0;
+
+            if (isEarlyReturn)
+            {
+                int unusedDays = (ci.EndDate.Date - DateTime.Now.Date).Days;
+
+                if (unusedDays > 0)
+                {
+                    refundAmount = unusedDays * ci.Price;
+                }
+            }
+            var dlg = new ReturnReportWindow(
+                contractId: ci.ContractId,
+                isEarly: isEarlyReturn,
+                employeeName: currentUserName)
+            {
+                Owner = this
+            };
+
+            if (dlg.ShowDialog() != true)
+                return;
+
+            string reportPath = dlg.ReportFilePath;
+
+            using var tr = database.BeginTransaction();
+
+            try
+            {
+                // 1. Завершаем договор (НЕ cancelled)
+                database.ExecuteNonQuery(
+                    @"UPDATE contracts
+              SET status = 'completed',
+                  returned_at = GETDATE(),
+                  return_report_path = @path
+              WHERE id = @id",
+                    new Dictionary<string, object>
+                    {
+                        ["@id"] = ci.ContractId,
+                        ["@path"] = reportPath
+                    });
+
+                // 2. Освобождаем машину
+                database.ExecuteNonQuery(
+                    "UPDATE cars SET status = 'available' WHERE id = @car",
+                    new Dictionary<string, object>
+                    {
+                        ["@car"] = ci.CarId
+                    });
+
+                tr.Commit();
+
+                MessageBox.Show("Аренда завершена, отчёт сохранён.",
+                    "Готово",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+
+                LoadContracts();
+            }
+            catch (Exception ex)
+            {
+                tr.Rollback();
+                MessageBox.Show("Ошибка завершения: " + ex.Message);
+            }
+        }
+        private void Pay_Click(object s, RoutedEventArgs e)
+        {
+            if (s is Button btn && btn.DataContext is ContractInfo ci)
+            {
+                database.ExecuteNonQuery("UPDATE contracts SET paid_amount = total_amount WHERE id=@id",
+                                         new Dictionary<string, object> { { "@id", ci.ContractId } });
+                LoadContracts();
+            }
+        }
+
+        private void OpenFile_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.DataContext is ContractInfo contract)
+            {
+                string encryptedPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, contract.FilePath);
+
+                if (!File.Exists(encryptedPath))
+                {
+                    MessageBox.Show("Файл не найден:\n" + encryptedPath);
+                    return;
+                }
+
+                try
+                {
+                    string tempPath = CryptoHelper.DecryptToTempFile(encryptedPath);
+                    Process.Start(new ProcessStartInfo(tempPath) { UseShellExecute = true });
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Ошибка при открытии:\n" + ex.Message);
+                }
+            }
+        }
+
+        private void PrintFile_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.DataContext is ContractInfo contract)
+            {
+                string encryptedPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, contract.FilePath);
+
+                if (!File.Exists(encryptedPath))
+                {
+                    MessageBox.Show("Файл не найден:\n" + encryptedPath);
+                    return;
+                }
+
+                try
+                {
+                    string tempDocx = CryptoHelper.DecryptToTempFile(encryptedPath);
+                    if (tempDocx.EndsWith(".docx", StringComparison.OrdinalIgnoreCase))
+                        PrintWordDocument(tempDocx);
+                    else
+                        PrintUsingWindowsDefault(tempDocx);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Ошибка при печати:\n" + ex.Message);
+                }
+            }
+        }
+        private void PrintWordDocument(string filePath)
+        {
+            Word.Application wordApp = null;
             Word.Document wordDoc = null;
 
             try
             {
                 System.Threading.Thread.Sleep(500);
+
                 wordApp = new Word.Application();
                 wordApp.Visible = false;
+
                 wordDoc = wordApp.Documents.Open(filePath, ReadOnly: true);
-                wordDoc.PrintOut(Background: false, Copies: 1, Range: Word.WdPrintOutRange.wdPrintAllDocument);
+
+                wordDoc.PrintOut(
+                    Background: false,
+                    Copies: 1,
+                    Range: Word.WdPrintOutRange.wdPrintAllDocument
+                );
+
                 System.Threading.Thread.Sleep(1000);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка печати через Word:\n{ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(
+                    $"Ошибка печати через Word:\n{ex.Message}",
+                    "Ошибка",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
             }
             finally
             {
@@ -550,16 +835,18 @@ ORDER BY c.id ASC;
                     wordDoc.Close(false);
                     System.Runtime.InteropServices.Marshal.ReleaseComObject(wordDoc);
                 }
+
                 if (wordApp != null)
                 {
                     wordApp.Quit(false);
                     System.Runtime.InteropServices.Marshal.ReleaseComObject(wordApp);
                 }
+
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
             }
         }
-
+        // Метод PrintUsingWindowsDefault: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #33).
         private void PrintUsingWindowsDefault(string filePath)
         {
             try
@@ -583,6 +870,7 @@ ORDER BY c.id ASC;
             }
         }
 
+        // Метод DeleteContract_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #34).
         private void DeleteContract_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button btn && btn.DataContext is ContractInfo contract)
@@ -620,6 +908,7 @@ ORDER BY c.id ASC;
             }
         }
 
+        // Метод ConfirmContract_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #35).
         private async void ConfirmContract_Click(object sender, RoutedEventArgs e)
         {
             if (!(sender is Button btn && btn.DataContext is ContractInfo contract)) return;
@@ -699,6 +988,7 @@ new Dictionary<string, object>
             }
         }
 
+        // Метод CancelConfirm_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #36).
         private async void CancelConfirm_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button btn && btn.DataContext is ContractInfo contract)
@@ -769,6 +1059,7 @@ new Dictionary<string, object>
             }
         }
 
+        // Метод SearchBox_GotFocus: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #37).
         private void SearchBox_GotFocus(object sender, RoutedEventArgs e)
         {
             if (SearchBox.Text == "Введите запрос")
@@ -778,6 +1069,7 @@ new Dictionary<string, object>
             }
         }
 
+        // Метод SearchBox_LostFocus: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #38).
         private void SearchBox_LostFocus(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(SearchBox.Text))
@@ -787,6 +1079,7 @@ new Dictionary<string, object>
             }
         }
 
+        // Метод SearchBox_TextChanged: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #39).
         private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (ContractsGrid == null || allContracts == null)
@@ -812,34 +1105,12 @@ new Dictionary<string, object>
             ContractsGrid.ItemsSource = filtered;
         }
 
+        // Метод BackButton_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #40).
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
         }
-        private string DecryptToTempFile(string encryptedPath)
-        {
-            string tempPath = Path.Combine(Path.GetTempPath(), Path.GetFileNameWithoutExtension(encryptedPath) + ".docx");
-
-            byte[] key = new byte[32];
-            byte[] iv = new byte[16];
-            for (int i = 0; i < key.Length; i++) key[i] = (byte)(i + 1);
-            for (int i = 0; i < iv.Length; i++) iv[i] = (byte)(i + 2);
-
-            using (FileStream inputFileStream = new(encryptedPath, FileMode.Open, FileAccess.Read))
-            using (FileStream outputFileStream = new(tempPath, FileMode.Create, FileAccess.Write))
-            using (var aes = System.Security.Cryptography.Aes.Create())
-            {
-                aes.Key = key;
-                aes.IV = iv;
-
-                using var decryptor = aes.CreateDecryptor();
-                using var cryptoStream = new System.Security.Cryptography.CryptoStream(inputFileStream, decryptor, System.Security.Cryptography.CryptoStreamMode.Read);
-                cryptoStream.CopyTo(outputFileStream);
-            }
-
-            return tempPath;
-        }
-
+        // Метод ContractsGrid_SelectionChanged: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #41).
         private void ContractsGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 

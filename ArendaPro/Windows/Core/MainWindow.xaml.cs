@@ -6,18 +6,15 @@ using static ArendaPro.OtherOborot;
 namespace ArendaPro
 {
 
+    // Логика класса: MainWindow содержит сценарии этого модуля, управляет данными и координирует взаимодействие UI с сервисами.
     public partial class MainWindow : Window
     {
-        private LoginWindow loginWindow;
-        private string userRole;
-        private string userName;
-        private string fullName;
-        private string email;
-        private string passportNumber;
+        private readonly LoginWindow loginWindow;
+        private readonly string userRole;
+        private readonly string fullName;
 
         public MainWindow(
     string role,
-    string username,
     string firstName,
     string middleName,
     string lastName,
@@ -46,6 +43,7 @@ namespace ArendaPro
             ConfigureAccessByRole(role);
         }
 
+        // Метод ConfigureAccessByRole: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #1).
         private void ConfigureAccessByRole(string role)
         {
             switch (role.ToLower())
@@ -68,6 +66,7 @@ namespace ArendaPro
                 loginWindow.Show();
         }
 
+        // Метод Button_Table_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #2).
         private void Button_Table_Click(object sender, RoutedEventArgs e)
         {
             Table_BD table_BD = new(userRole, this);
@@ -75,12 +74,14 @@ namespace ArendaPro
             this.Hide();
         }
 
+        // Метод Button_Dogovor_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #3).
         private void Button_Dogovor_Click(object sender, RoutedEventArgs e)
         {
             ContractWindow contractWindow = new();
             contractWindow.ShowDialog();
         }
 
+        // Метод Button_tarifi_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #4).
         private void Button_tarifi_Click(object sender, RoutedEventArgs e)
         {
             bool isAdmin = string.Equals(CurrentSession.Role,
@@ -89,21 +90,23 @@ namespace ArendaPro
 
             var win = new Tarifi(isAdmin);
             win.ShowDialog();
-            ;
         }
 
+        // Метод Button_spisok_dogovorov_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #5).
         private void Button_spisok_dogovorov_Click(object sender, RoutedEventArgs e)
         {
             spisok_dogovorov spisok_Dogovorov = new(userRole, fullName);
             spisok_Dogovorov.Show();
         }
 
+        // Метод Button_OtherOborot_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #6).
         private void Button_OtherOborot_Click(object sender, RoutedEventArgs e)
         {
             OtherOborot otherOborot = new(fullName);
             otherOborot.Show();
         }
 
+        // Метод Button_Exit_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #7).
         private void Button_Exit_Click(object sender, RoutedEventArgs e)
         {
             loginWindow?.ResetForRelogin();

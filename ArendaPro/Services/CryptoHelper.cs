@@ -1,18 +1,22 @@
 ﻿using System;
 using System.IO;
 using System.Security.Cryptography;
-using System.Text;
 
 namespace ArendaPro
 {
     public static class CryptoHelper
     {
+        // Логика: метод GetKey реализует отдельный шаг бизнес-логики, связывая входные данные, проверки и итоговое действие.
+        // Метод GetKey: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #1).
         public static byte[] GetKey() =>
             StringToByteArray(Properties.Settings.Default.EncryptionKey, 32);
 
+        // Логика: метод GetIV реализует отдельный шаг бизнес-логики, связывая входные данные, проверки и итоговое действие.
+        // Метод GetIV: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #2).
         public static byte[] GetIV() =>
             StringToByteArray(Properties.Settings.Default.EncryptionIV, 16);
 
+        // Метод StringToByteArray: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #3).
         private static byte[] StringToByteArray(string hex, int expectedLength)
         {
             if (hex.Length != expectedLength * 2)
@@ -24,6 +28,7 @@ namespace ArendaPro
             return bytes;
         }
 
+        // Метод EncryptFile: выполняет криптографическое преобразование потока, обеспечивая корректный формат и целостность выходного результата (комментарий #4).
         public static void EncryptFile(string inputPath, string outputPath)
         {
             using var inputFile = new FileStream(inputPath, FileMode.Open, FileAccess.Read);
@@ -36,6 +41,7 @@ namespace ArendaPro
             inputFile.CopyTo(cryptoStream);
         }
 
+        // Метод DecryptFile: выполняет криптографическое преобразование потока, обеспечивая корректный формат и целостность выходного результата (комментарий #5).
         public static void DecryptFile(string inputPath, string outputPath)
         {
             using var inputFile = new FileStream(inputPath, FileMode.Open, FileAccess.Read);
@@ -48,6 +54,7 @@ namespace ArendaPro
             cryptoStream.CopyTo(outputFile);
         }
 
+        // Метод DecryptToTempFile: выполняет криптографическое преобразование потока, обеспечивая корректный формат и целостность выходного результата (комментарий #6).
         public static string DecryptToTempFile(string encryptedPath)
         {
             string tempPath = Path.Combine(Path.GetTempPath(), Path.GetFileNameWithoutExtension(encryptedPath) + ".docx");

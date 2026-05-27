@@ -11,9 +11,10 @@ using System.Windows.Controls;
 namespace ArendaPro
 {
 
+    // Логика класса: OtherOborot содержит сценарии этого модуля, управляет данными и координирует взаимодействие UI с сервисами.
     public partial class OtherOborot : Window
     {
-        private string Fullusername;
+        private readonly string _fullUsername;
         private readonly string connStr = ConfigurationManager.ConnectionStrings["DbConnection"]?.ConnectionString;
         private readonly BD database;
         public static class CurrentSession
@@ -26,13 +27,14 @@ namespace ArendaPro
         }
         public OtherOborot(string Fullname)
         {
-            Fullusername = Fullname;
+            _fullUsername = Fullname;
             InitializeComponent();
             database = new BD(connStr);
             DateFrom.SelectedDate = DateTime.Today.AddMonths(-1);
             DateTo.SelectedDate = DateTime.Today;
         }
 
+        // Метод ExportToExcel_PerfectLayout: собирает итоговую структуру данных и сохраняет её в файл/хранилище с обработкой пограничных случаев (комментарий #1).
         private void ExportToExcel_PerfectLayout(
      string path,
      DataTable table,
@@ -115,6 +117,7 @@ namespace ArendaPro
             wb.SaveAs(path);
         }
 
+        // Метод GetExcelColumnName: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #2).
         private string GetExcelColumnName(int columnNumber)
         {
             string columnName = "";
@@ -126,6 +129,7 @@ namespace ArendaPro
             }
             return columnName;
         }
+        // Метод GenerateReport_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #3).
         private void GenerateReport_Click(object sender, RoutedEventArgs e)
         {
             if (!(ReportGrid.ItemsSource is DataView dv)
@@ -201,7 +205,7 @@ namespace ArendaPro
                 visibleColumns,
                 from,
                 to,
-                Fullusername,
+                _fullUsername,
                 summaryText
             );
 
@@ -210,6 +214,7 @@ namespace ArendaPro
 
 
 
+        // Метод Show_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #4).
         private void Show_Click(object sender, RoutedEventArgs e)
         {
             if (DateFrom.SelectedDate == null || DateTo.SelectedDate == null)
@@ -364,12 +369,10 @@ ORDER BY c.start_date DESC;
             }
         }
 
+        // Метод BackButton_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #5).
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
         }
     }
 }
-
-
-

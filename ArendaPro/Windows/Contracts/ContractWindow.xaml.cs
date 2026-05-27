@@ -16,6 +16,7 @@ using System.Data.SqlClient;
 using System.Data;
 namespace ArendaPro
 {
+    // Логика класса: ContractWindow содержит сценарии этого модуля, управляет данными и координирует взаимодействие UI с сервисами.
     public partial class ContractWindow : Window
     {
         private decimal _dailyRate = 0m;
@@ -90,23 +91,28 @@ namespace ArendaPro
             return string.Join(" ", parts.Where(p => !string.IsNullOrWhiteSpace(p)));
         }
 
+        // Метод Window_Loaded: инициализирует состояние модуля при старте: загружает данные и подготавливает элементы экрана к работе (комментарий #1).
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             await LoadDataAsync();
         }
 
+        // Логика класса: BoolToConfirmCancelButtonConverter содержит сценарии этого модуля, управляет данными и координирует взаимодействие UI с сервисами.
         public class BoolToConfirmCancelButtonConverter : IValueConverter
         {
+            // Метод Convert: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #2).
             public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
             {
                 return (bool)value ? "Подтвердить" : "Отмена";
             }
 
+            // Метод ConvertBack: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #3).
             public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
             {
                 throw new NotImplementedException();
             }
         }
+        // Метод IsCarAvailable: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #4).
         private async Task<bool> IsCarAvailable(int carId, DateTime startDate, DateTime endDate)
         {
             try
@@ -138,6 +144,7 @@ END",
             }
         }
        
+        // Метод ValidateDateTime: проводит целевую валидацию условий и сообщает, можно ли безопасно продолжать сценарий (комментарий #5).
         private bool ValidateDateTime()
         {
 
@@ -185,6 +192,7 @@ END",
             return true;
         }
 
+        // Метод LoadDataAsync: инициализирует состояние модуля при старте: загружает данные и подготавливает элементы экрана к работе (комментарий #6).
         private async Task LoadDataAsync()
         {
             try
@@ -223,12 +231,14 @@ END",
                 MessageBox.Show($"Ошибка загрузки данных: {ex.Message}");
             }
         }
+        // Метод OnDateChanged: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #7).
         private void OnDateChanged(object sender, SelectionChangedEventArgs e)
         {
             RecalculatePrice(sender, e);
         }
 
 
+        // Метод RecalculatePrice: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #8).
         private async void RecalculatePrice(object sender, EventArgs e)
         {
             if (!TryGetDateTime(out DateTime startDateTime, out DateTime endDateTime)
@@ -286,6 +296,7 @@ ORDER BY start_date DESC;", conn);
             _dailyRate = decimal.Truncate(dailyRate);    
             PriceBox.Text = _dailyRate.ToString("F0", CultureInfo.InvariantCulture);
         }
+        // Метод TryGetDateTime: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #9).
         private bool TryGetDateTime(out DateTime start, out DateTime end)
         {
             start = DateTime.MinValue;
@@ -309,6 +320,7 @@ ORDER BY start_date DESC;", conn);
             lastValidEndDate = end;
             return true;
         }
+        // Метод AddPlaceIfNew: добавляет новую сущность в доменную коллекцию и синхронизирует зависимые визуальные и вычислительные представления (комментарий #10).
         private async Task AddPlaceIfNew(string place, ComboBox comboBox)
         {
             if (string.IsNullOrWhiteSpace(place)) return;
@@ -339,16 +351,19 @@ ORDER BY start_date DESC;", conn);
             }
         }
 
+        // Метод PlaceStartBox_LostFocus: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #11).
         private async void PlaceStartBox_LostFocus(object sender, RoutedEventArgs e)
         {
             await AddPlaceIfNew(PlaceStartBox.Text, PlaceStartBox);
         }
 
+        // Метод PlaceEndBox_LostFocus: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #12).
         private async void PlaceEndBox_LostFocus(object sender, RoutedEventArgs e)
         {
             await AddPlaceIfNew(PlaceEndBox.Text, PlaceEndBox);
         }
 
+        // Метод GenerateContract_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #13).
         private async void GenerateContract_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -658,6 +673,7 @@ VALUES (
             doc.MainDocumentPart.Document.Save();
         }
 
+        // Метод BackButton_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #14).
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
             this.Close();

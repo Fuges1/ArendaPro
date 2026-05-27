@@ -268,83 +268,83 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="AddColumnDialog.xaml.cs">
-      <DependentUpon>AddColumnDialog.xaml</DependentUpon>
+    <Compile Include="Dialogs\AddColumnDialog.xaml.cs">
+      <DependentUpon>Dialogs\AddColumnDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="BD.cs" />
-    <Compile Include="ClientAdd.xaml.cs">
-      <DependentUpon>ClientAdd.xaml</DependentUpon>
+    <Compile Include="Services\BD.cs" />
+    <Compile Include="Dialogs\ClientAdd.xaml.cs">
+      <DependentUpon>Dialogs\ClientAdd.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ContractWindow.xaml.cs">
-      <DependentUpon>ContractWindow.xaml</DependentUpon>
+    <Compile Include="Windows\Contracts\ContractWindow.xaml.cs">
+      <DependentUpon>Windows\Contracts\ContractWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="CryptoHelper.cs" />
-    <Compile Include="DatePickerDialog.xaml.cs">
-      <DependentUpon>DatePickerDialog.xaml</DependentUpon>
+    <Compile Include="Services\CryptoHelper.cs" />
+    <Compile Include="Dialogs\DatePickerDialog.xaml.cs">
+      <DependentUpon>Dialogs\DatePickerDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="DateRangeDialog.xaml.cs">
-      <DependentUpon>DateRangeDialog.xaml</DependentUpon>
+    <Compile Include="Dialogs\DateRangeDialog.xaml.cs">
+      <DependentUpon>Dialogs\DateRangeDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="EditColumnDialog.xaml.cs">
-      <DependentUpon>EditColumnDialog.xaml</DependentUpon>
+    <Compile Include="Dialogs\EditColumnDialog.xaml.cs">
+      <DependentUpon>Dialogs\EditColumnDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="InputDialog.xaml.cs">
-      <DependentUpon>InputDialog.xaml</DependentUpon>
+    <Compile Include="Dialogs\InputDialog.xaml.cs">
+      <DependentUpon>Dialogs\InputDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="OtherOborot.xaml.cs">
-      <DependentUpon>OtherOborot.xaml</DependentUpon>
+    <Compile Include="Windows\Reports\OtherOborot.xaml.cs">
+      <DependentUpon>Windows\Reports\OtherOborot.xaml</DependentUpon>
     </Compile>
-    <Compile Include="RegisterUserWindow.xaml.cs">
-      <DependentUpon>RegisterUserWindow.xaml</DependentUpon>
+    <Compile Include="Windows\Auth\RegisterUserWindow.xaml.cs">
+      <DependentUpon>Windows\Auth\RegisterUserWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ReturnReportWindow.xaml.cs">
-      <DependentUpon>ReturnReportWindow.xaml</DependentUpon>
+    <Compile Include="Windows\Contracts\ReturnReportWindow.xaml.cs">
+      <DependentUpon>Windows\Contracts\ReturnReportWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="SelectColumnDialog.xaml.cs">
-      <DependentUpon>SelectColumnDialog.xaml</DependentUpon>
+    <Compile Include="Dialogs\SelectColumnDialog.xaml.cs">
+      <DependentUpon>Dialogs\SelectColumnDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="spisok_dogovorov.xaml.cs">
-      <DependentUpon>spisok_dogovorov.xaml</DependentUpon>
+    <Compile Include="Windows\Reports\spisok_dogovorov.xaml.cs">
+      <DependentUpon>Windows\Reports\spisok_dogovorov.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Table_BD.xaml.cs">
-      <DependentUpon>Table_BD.xaml</DependentUpon>
+    <Compile Include="Windows\Admin\Table_BD.xaml.cs">
+      <DependentUpon>Windows\Admin\Table_BD.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Tarifi.xaml.cs">
-      <DependentUpon>Tarifi.xaml</DependentUpon>
+    <Compile Include="Windows\Contracts\Tarifi.xaml.cs">
+      <DependentUpon>Windows\Contracts\Tarifi.xaml</DependentUpon>
     </Compile>
-    <Page Include="AddColumnDialog.xaml">
+    <Page Include="Dialogs\AddColumnDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ClientAdd.xaml">
+    <Page Include="Dialogs\ClientAdd.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ContractWindow.xaml">
+    <Page Include="Windows\Contracts\ContractWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="DatePickerDialog.xaml">
+    <Page Include="Dialogs\DatePickerDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="DateRangeDialog.xaml">
+    <Page Include="Dialogs\DateRangeDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="EditColumnDialog.xaml">
+    <Page Include="Dialogs\EditColumnDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="InputDialog.xaml">
+    <Page Include="Dialogs\InputDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="LoginWindow.xaml">
+    <Page Include="Windows\Auth\LoginWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainWindow.xaml">
+    <Page Include="Windows\Core\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -352,38 +352,38 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="LoginWindow.xaml.cs">
-      <DependentUpon>LoginWindow.xaml</DependentUpon>
+    <Compile Include="Windows\Auth\LoginWindow.xaml.cs">
+      <DependentUpon>Windows\Auth\LoginWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
+    <Compile Include="Windows\Core\MainWindow.xaml.cs">
+      <DependentUpon>Windows\Core\MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="OtherOborot.xaml">
+    <Page Include="Windows\Reports\OtherOborot.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="RegisterUserWindow.xaml">
+    <Page Include="Windows\Auth\RegisterUserWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ReturnReportWindow.xaml">
+    <Page Include="Windows\Contracts\ReturnReportWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="SelectColumnDialog.xaml">
+    <Page Include="Dialogs\SelectColumnDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="spisok_dogovorov.xaml">
+    <Page Include="Windows\Reports\spisok_dogovorov.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Table_BD.xaml">
+    <Page Include="Windows\Admin\Table_BD.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Tarifi.xaml">
+    <Page Include="Windows\Contracts\Tarifi.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

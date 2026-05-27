@@ -3,6 +3,7 @@
 namespace ArendaPro
 {
 
+    // Логика класса: AddColumnDialog содержит сценарии этого модуля, управляет данными и координирует взаимодействие UI с сервисами.
     public partial class AddColumnDialog : Window
     {
         public string ColumnName { get; private set; }
@@ -13,6 +14,7 @@ namespace ArendaPro
             InitializeComponent();
         }
 
+        // Метод AddButton_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #1).
         private void AddButton_Click(object sender, RoutedEventArgs e)
         {
             ColumnName = ColumnNameBox.Text.Trim();

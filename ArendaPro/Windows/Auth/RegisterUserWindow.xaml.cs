@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Data.SqlClient;
 namespace ArendaPro
 {
+    // Логика класса: RegisterUserWindow содержит сценарии этого модуля, управляет данными и координирует взаимодействие UI с сервисами.
     public partial class RegisterUserWindow : Window
     {
         private readonly string connectionString;
@@ -16,10 +17,12 @@ namespace ArendaPro
             connectionString = ConfigurationManager.ConnectionStrings["DbConnection"]?.ConnectionString;
         }
 
+        // Метод RegisterButton_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #1).
         private async void RegisterButton_Click(object sender, RoutedEventArgs e)
         {
             try
             {
+                // Шаг 1: считываем введённые администратором значения и нормализуем текстовые поля.
                 string username = UsernameBox.Text.Trim();
                 string password = PasswordBox.Password;
                 string role = ((ComboBoxItem)RoleBox.SelectedItem)?.Content.ToString();
@@ -42,7 +45,14 @@ namespace ArendaPro
                     return;
                 }
 
+                if (string.IsNullOrWhiteSpace(connectionString))
+                {
+                    MessageBox.Show("Строка подключения к БД не настроена.");
+                    return;
+                }
 
+
+                // Шаг 2: подключаемся к БД только после проверок обязательных полей и конфигурации.
                 using var conn = new SqlConnection(connectionString);
                 await conn.OpenAsync();
 
@@ -51,7 +61,7 @@ namespace ArendaPro
           FROM public.users
           WHERE passport_number = @passport", conn))
                 {
-                    checkCmd.Parameters.AddWithValue("passport", passport);
+                    checkCmd.Parameters.AddWithValue("@passport", passport);
                     bool exists = Convert.ToInt32(await checkCmd.ExecuteScalarAsync()) > 0;
                     if (exists)
                     {
@@ -62,7 +72,7 @@ namespace ArendaPro
                 using (var checkUser = new SqlCommand(
     @"SELECT COUNT(1) FROM public.users WHERE username = @username", conn))
                 {
-                    checkUser.Parameters.AddWithValue("username", username);
+                    checkUser.Parameters.AddWithValue("@username", username);
                     bool userExists = Convert.ToInt32(await checkUser.ExecuteScalarAsync()) > 0;
                     if (userExists)
                     {
@@ -70,6 +80,7 @@ namespace ArendaPro
                         return;
                     }
                 }
+                // Шаг 3: перед сохранением всегда хешируем пароль, чтобы не хранить его в открытом виде.
                 string hash = BCrypt.Net.BCrypt.HashPassword(password);
                 using (var insertCmd = new SqlCommand(@"
         INSERT INTO public.users
@@ -79,16 +90,16 @@ namespace ArendaPro
           (@username, @password, @role, @first, @last, @middle,
            @mail, @passport, @issuedby, @issuedate)", conn))
                 {
-                    insertCmd.Parameters.AddWithValue("username", username);
-                    insertCmd.Parameters.AddWithValue("password", hash);
-                    insertCmd.Parameters.AddWithValue("role", role);
-                    insertCmd.Parameters.AddWithValue("first", firstName);
-                    insertCmd.Parameters.AddWithValue("last", lastName);
-                    insertCmd.Parameters.AddWithValue("middle", middleName);
-                    insertCmd.Parameters.AddWithValue("mail", email);
-                    insertCmd.Parameters.AddWithValue("passport", passport);
-                    insertCmd.Parameters.AddWithValue("issuedby", issuedBy);
-                    insertCmd.Parameters.AddWithValue("issuedate", issueDate ?? DateTime.Now);
+                    insertCmd.Parameters.AddWithValue("@username", username);
+                    insertCmd.Parameters.AddWithValue("@password", hash);
+                    insertCmd.Parameters.AddWithValue("@role", role);
+                    insertCmd.Parameters.AddWithValue("@first", firstName);
+                    insertCmd.Parameters.AddWithValue("@last", lastName);
+                    insertCmd.Parameters.AddWithValue("@middle", middleName);
+                    insertCmd.Parameters.AddWithValue("@mail", email);
+                    insertCmd.Parameters.AddWithValue("@passport", passport);
+                    insertCmd.Parameters.AddWithValue("@issuedby", issuedBy);
+                    insertCmd.Parameters.AddWithValue("@issuedate", issueDate ?? DateTime.Now);
 
                     await insertCmd.ExecuteNonQueryAsync();
                 }
@@ -104,6 +115,7 @@ namespace ArendaPro
         }
 
 
+        // Метод CancelButton_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #2).
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             this.Close();

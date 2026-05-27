@@ -7,6 +7,7 @@ using System.Windows.Input;
 
 namespace ArendaPro
 {
+    // Логика класса: ClientAdd содержит сценарии этого модуля, управляет данными и координирует взаимодействие UI с сервисами.
     public partial class ClientAdd : Window
     {
         public DataRow NewClientRow { get; private set; }
@@ -18,6 +19,7 @@ namespace ArendaPro
             _clientsSchema = clientsSchema;
         }
 
+        // Метод OkButton_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #1).
         private void OkButton_Click(object sender, RoutedEventArgs e)
         {
             var error = ValidateInputs();
@@ -42,10 +44,12 @@ namespace ArendaPro
 
             DialogResult = true;
         }
+        // Метод PassportBox_PreviewTextInput: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #2).
         private void PassportBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             e.Handled = !char.IsDigit(e.Text, 0);
         }
+        // Метод PassportBox_PreviewKeyDown: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #3).
         private void PassportBox_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             var tb = (TextBox)sender;
@@ -57,6 +61,7 @@ namespace ArendaPro
                 tb.CaretIndex = e.Key == Key.Back ? 4 : 4;
             }
         }
+        // Метод PassportBox_TextChanged: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #4).
         private void PassportBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             var tb = (TextBox)sender;
@@ -76,11 +81,13 @@ namespace ArendaPro
             else
                 tb.CaretIndex = formatted.Length;
         }
+        // Метод RemoveAt: удаляет выбранные данные, после чего актуализирует связанные поля, фильтры и представления интерфейса (комментарий #5).
         private string RemoveAt(string text, int index)
         {
             if (index < 0 || index >= text.Length) return text;
             return text.Remove(index, 1);
         }
+        // Метод PhoneBox_PreviewTextInput: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #6).
         private void PhoneBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             var tb = (TextBox)sender;
@@ -89,6 +96,7 @@ namespace ArendaPro
             if (!char.IsDigit(e.Text, 0))
                 e.Handled = true;
         }
+        // Метод PhoneBox_TextChanged: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #7).
         private void PhoneBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             var tb = (TextBox)sender;
@@ -111,11 +119,13 @@ namespace ArendaPro
             }
         }
 
+        // Метод LicenseBox_PreviewTextInput: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #8).
         private void LicenseBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             e.Handled = !(char.IsLetterOrDigit(e.Text, 0));
         }
 
+        // Метод LicenseBox_TextChanged: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #9).
         private void LicenseBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             var tb = (TextBox)sender;
@@ -127,6 +137,7 @@ namespace ArendaPro
                 tb.CaretIndex = pos;
             }
         }
+        // Метод ValidateInputs: проводит целевую валидацию условий и сообщает, можно ли безопасно продолжать сценарий (комментарий #10).
         private string ValidateInputs()
         {
             if (string.IsNullOrWhiteSpace(SurnameBox.Text) ||
