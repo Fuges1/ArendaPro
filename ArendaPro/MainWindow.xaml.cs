@@ -14,7 +14,6 @@ namespace ArendaPro
 
         public MainWindow(
     string role,
-    string username,
     string firstName,
     string middleName,
     string lastName,
@@ -26,7 +25,6 @@ namespace ArendaPro
         {
             InitializeComponent();
 
-            _ = username;
             this.userRole = role;
             DispatcherTimer timer = new();
             timer.Interval = TimeSpan.FromSeconds(1);

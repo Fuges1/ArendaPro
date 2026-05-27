@@ -28,7 +28,7 @@ namespace ArendaPro
             ConfigurationManager.ConnectionStrings["DbConnection"]?.ConnectionString;
 
         private MainWindow mainWindow;
-        private bool _isLoggingIn = false;
+        private bool _isLoggingIn;
 
         public LoginWindow() => InitializeComponent();
 
@@ -46,6 +46,12 @@ namespace ArendaPro
                 if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
                 {
                     ShowError("Заполните все поля.");
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(connectionString))
+                {
+                    ShowError("Строка подключения к БД не настроена.");
                     return;
                 }
 
@@ -120,7 +126,7 @@ namespace ArendaPro
         {
             using var cmd = new SqlCommand(
                 "SELECT 1 FROM users WHERE username = @username", conn);
-            cmd.Parameters.AddWithValue("username", username);
+            cmd.Parameters.AddWithValue("@username", username);
             return (await cmd.ExecuteScalarAsync()) != null;
         }
 
@@ -129,7 +135,7 @@ namespace ArendaPro
         {
             using var cmd = new SqlCommand(
                 "SELECT password FROM users WHERE username = @username", conn);
-            cmd.Parameters.AddWithValue("username", username);
+            cmd.Parameters.AddWithValue("@username", username);
 
             string pwd = (await cmd.ExecuteScalarAsync())?.ToString() ?? string.Empty;
             bool isBC = IsBcryptHash(pwd);
@@ -144,8 +150,8 @@ namespace ArendaPro
             string hash = BCrypt.Net.BCrypt.HashPassword(plainPwd);
             using var cmd = new SqlCommand(
                 "UPDATE users SET password = @p WHERE username = @u", conn);
-            cmd.Parameters.AddWithValue("p", hash);
-            cmd.Parameters.AddWithValue("u", username);
+            cmd.Parameters.AddWithValue("@p", hash);
+            cmd.Parameters.AddWithValue("@u", username);
             await cmd.ExecuteNonQueryAsync();
         }
 
@@ -158,7 +164,7 @@ FROM [users]
 WHERE username = @u";
 
             using var cmd = new SqlCommand(q, conn);
-            cmd.Parameters.AddWithValue("u", username);
+            cmd.Parameters.AddWithValue("@u", username);
 
             using var r = await cmd.ExecuteReaderAsync();
             if (await r.ReadAsync())
@@ -189,7 +195,6 @@ WHERE username = @u";
 
             mainWindow = new MainWindow(
                 role: u.Role,
-                username: u.Username,
                 firstName: u.FirstName,
                 middleName: u.MiddleName,
                 lastName: u.LastName,
