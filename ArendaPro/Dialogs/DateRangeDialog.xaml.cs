@@ -4,6 +4,7 @@ using System.Windows;
 namespace ArendaPro
 {
 
+    // Логика класса: DateRangeDialog инкапсулирует соответствующий экран/сервис и его сценарии работы.
     public partial class DateRangeDialog : Window
     {
         public DateTime StartDate { get; private set; }

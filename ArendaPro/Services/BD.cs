@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Data.SqlClient;
 namespace ArendaPro
 {
+    // Логика класса: BD инкапсулирует соответствующий экран/сервис и его сценарии работы.
     internal class BD
     {
         private readonly string connectionString;

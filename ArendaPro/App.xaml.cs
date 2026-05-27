@@ -2,6 +2,7 @@
 
 namespace ArendaPro
 {
+    // Логика класса: App инкапсулирует соответствующий экран/сервис и его сценарии работы.
     public partial class App : Application
     {
 

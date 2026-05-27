@@ -8,8 +8,10 @@ using static ArendaPro.OtherOborot;
 using System.Data.SqlClient;
 namespace ArendaPro
 {
+    // Логика класса: LoginWindow инкапсулирует соответствующий экран/сервис и его сценарии работы.
     public partial class LoginWindow : Window
     {
+        // Логика класса: UserData инкапсулирует соответствующий экран/сервис и его сценарии работы.
         public class UserData
         {
             public int UserId { get; set; }

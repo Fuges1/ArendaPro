@@ -16,6 +16,7 @@ using System.Data.SqlClient;
 using System.Data;
 namespace ArendaPro
 {
+    // Логика класса: ContractWindow инкапсулирует соответствующий экран/сервис и его сценарии работы.
     public partial class ContractWindow : Window
     {
         private decimal _dailyRate = 0m;
@@ -95,6 +96,7 @@ namespace ArendaPro
             await LoadDataAsync();
         }
 
+        // Логика класса: BoolToConfirmCancelButtonConverter инкапсулирует соответствующий экран/сервис и его сценарии работы.
         public class BoolToConfirmCancelButtonConverter : IValueConverter
         {
             public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)

@@ -7,6 +7,7 @@ using System.Windows.Input;
 
 namespace ArendaPro
 {
+    // Логика класса: ClientAdd инкапсулирует соответствующий экран/сервис и его сценарии работы.
     public partial class ClientAdd : Window
     {
         public DataRow NewClientRow { get; private set; }

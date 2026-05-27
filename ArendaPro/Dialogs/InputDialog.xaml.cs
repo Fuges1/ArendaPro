@@ -4,6 +4,7 @@ using System.Windows;
 namespace ArendaPro
 {
 
+    // Логика класса: InputDialog инкапсулирует соответствующий экран/сервис и его сценарии работы.
     public partial class InputDialog : Window
     {
         public InputDialog() => InitializeComponent();

@@ -8,6 +8,7 @@ using System.Windows;
 namespace ArendaPro
 {
 
+    // Логика класса: ReturnReportWindow инкапсулирует соответствующий экран/сервис и его сценарии работы.
     public partial class ReturnReportWindow : Window
     {
 

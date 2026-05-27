@@ -11,6 +11,7 @@ using System.Windows.Controls;
 namespace ArendaPro
 {
 
+    // Логика класса: OtherOborot инкапсулирует соответствующий экран/сервис и его сценарии работы.
     public partial class OtherOborot : Window
     {
         private readonly string _fullUsername;

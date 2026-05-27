@@ -4,6 +4,7 @@ using System.Windows;
 namespace ArendaPro
 {
 
+    // Логика класса: DatePickerDialog инкапсулирует соответствующий экран/сервис и его сценарии работы.
     public partial class DatePickerDialog : Window
     {
         public DateTime SelectedDate { get; private set; }

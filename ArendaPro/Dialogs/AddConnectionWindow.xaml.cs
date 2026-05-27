@@ -5,6 +5,7 @@ using System.Windows;
 
 namespace ArendaPro
 {
+    // Логика класса: AddConnectionWindow инкапсулирует соответствующий экран/сервис и его сценарии работы.
     public partial class AddConnectionWindow : Window
     {
         public AddConnectionWindow()

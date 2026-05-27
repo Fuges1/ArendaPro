@@ -11,6 +11,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 namespace ArendaPro
 {
+    // Логика класса: Tarifi инкапсулирует соответствующий экран/сервис и его сценарии работы.
     public partial class Tarifi : Window
     {
         private readonly string _cs = ConfigurationManager
@@ -21,6 +22,7 @@ namespace ArendaPro
         private List<TariffRow> rows;
 
         private readonly bool isAdmin;
+        // Логика класса: TariffSegment инкапсулирует соответствующий экран/сервис и его сценарии работы.
         public class TariffSegment
         {
             public int CarId { get; set; }
@@ -37,6 +39,7 @@ namespace ArendaPro
             InitializeComponent();
             isAdmin = isAdminFlag;
         }
+        // Логика класса: OverlapInfo инкапсулирует соответствующий экран/сервис и его сценарии работы.
         public class OverlapInfo
         {
             public DateTime StartDate { get; set; }
@@ -406,6 +409,7 @@ ORDER BY end_date;
 
         }
 
+        // Логика класса: EndDateConverter инкапсулирует соответствующий экран/сервис и его сценарии работы.
         public class EndDateConverter : IValueConverter
         {
             public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

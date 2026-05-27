@@ -12,6 +12,7 @@ using System.Windows.Data;
 using System.Windows.Media;
 namespace ArendaPro
 {
+    // Логика класса: StringToVisibilityConverter инкапсулирует соответствующий экран/сервис и его сценарии работы.
     public class StringToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -22,6 +23,7 @@ namespace ArendaPro
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
             => throw new NotImplementedException();
     }
+    // Логика класса: StatusToDeleteVisibilityConverter инкапсулирует соответствующий экран/сервис и его сценарии работы.
     public class StatusToDeleteVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -36,6 +38,7 @@ namespace ArendaPro
             throw new NotImplementedException();
         }
     }
+    // Логика класса: StatusToCompleteVisibilityConverter инкапсулирует соответствующий экран/сервис и его сценарии работы.
     public class StatusToCompleteVisibilityConverter : IValueConverter
     {
    
@@ -52,6 +55,7 @@ namespace ArendaPro
         }
     }
 
+    // Логика класса: BoolToBrushConverter инкапсулирует соответствующий экран/сервис и его сценарии работы.
     public class BoolToBrushConverter : IValueConverter
     {
         public static BoolToBrushConverter Instance { get; } = new BoolToBrushConverter();
@@ -66,6 +70,7 @@ namespace ArendaPro
             throw new NotImplementedException();
         }
     }
+    // Логика класса: BoolToConfirmCancelButtonConverter инкапсулирует соответствующий экран/сервис и его сценарии работы.
     public class BoolToConfirmCancelButtonConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -80,6 +85,7 @@ namespace ArendaPro
             return value.ToString() == "Отменить";
         }
     }
+    // Логика класса: StatusToToggleVisibilityConverter инкапсулирует соответствующий экран/сервис и его сценарии работы.
     public class StatusToToggleVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -96,6 +102,7 @@ namespace ArendaPro
         }
     }
 
+    // Логика класса: AdminAndStatusToVisibilityConverter инкапсулирует соответствующий экран/сервис и его сценарии работы.
     public class AdminAndStatusToVisibilityConverter : IMultiValueConverter
     {
         public object Convert(object[] values, Type t, object p, CultureInfo c)
@@ -112,6 +119,7 @@ namespace ArendaPro
         public object[] ConvertBack(object v, Type[] tt, object p, CultureInfo c)
             => throw new NotImplementedException();
     }
+    // Логика класса: FileNameConverter инкапсулирует соответствующий экран/сервис и его сценарии работы.
     public class FileNameConverter : IValueConverter
     {
      
@@ -127,12 +135,14 @@ namespace ArendaPro
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
             => throw new NotSupportedException();
     }
+    // Логика класса: spisok_dogovorov инкапсулирует соответствующий экран/сервис и его сценарии работы.
     public partial class spisok_dogovorov : Window
     {
         private readonly BD database;
         private readonly string connStr;
         private ObservableCollection<ContractInfo> allContracts = new();
         private string role;
+        // Логика класса: ContractInfo инкапсулирует соответствующий экран/сервис и его сценарии работы.
         public class ContractInfo
         {
 

@@ -4,6 +4,7 @@ using System.Windows;
 namespace ArendaPro
 {
 
+    // Логика класса: SelectColumnDialog инкапсулирует соответствующий экран/сервис и его сценарии работы.
     public partial class SelectColumnDialog : Window
     {
         public string SelectedColumn => ColumnComboBox.SelectedItem?.ToString();
