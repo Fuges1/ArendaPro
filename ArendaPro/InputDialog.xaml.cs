@@ -6,12 +6,7 @@ namespace ArendaPro
 
     public partial class InputDialog : Window
     {
-        public string InputText { get; private set; }
-
-        public InputDialog()
-        {
-            InitializeComponent();
-        }
+        public InputDialog() => InitializeComponent();
         public string RealName { get; private set; }
         public string DisplayName { get; private set; }
 

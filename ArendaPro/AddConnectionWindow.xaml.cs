@@ -39,11 +39,17 @@ namespace ArendaPro
                     ?? new List<MainWindow.DbConnectionConfig>();
             }
 
+            if (list.Exists(c => c.Name == name))
+            {
+                MessageBox.Show("Подключение с таким именем уже существует.");
+                return;
+            }
+
             list.Add(newConn);
             File.WriteAllText(file, JsonSerializer.Serialize(list, new JsonSerializerOptions { WriteIndented = true }));
 
             MessageBox.Show("Подключение добавлено!");
-            this.Close();
+            Close();
         }
     }
 }

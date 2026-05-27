@@ -8,7 +8,7 @@ namespace ArendaPro
     {
         public string SelectedColumn => ColumnComboBox.SelectedItem?.ToString();
 
-        public SelectColumnDialog(List<string> columns)
+        public SelectColumnDialog(IReadOnlyList<string> columns)
         {
             InitializeComponent();
             ColumnComboBox.ItemsSource = columns;
