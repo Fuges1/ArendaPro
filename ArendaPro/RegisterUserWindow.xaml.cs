@@ -42,6 +42,12 @@ namespace ArendaPro
                     return;
                 }
 
+                if (string.IsNullOrWhiteSpace(connectionString))
+                {
+                    MessageBox.Show("Строка подключения к БД не настроена.");
+                    return;
+                }
+
 
                 using var conn = new SqlConnection(connectionString);
                 await conn.OpenAsync();
@@ -51,7 +57,7 @@ namespace ArendaPro
           FROM public.users
           WHERE passport_number = @passport", conn))
                 {
-                    checkCmd.Parameters.AddWithValue("passport", passport);
+                    checkCmd.Parameters.AddWithValue("@passport", passport);
                     bool exists = Convert.ToInt32(await checkCmd.ExecuteScalarAsync()) > 0;
                     if (exists)
                     {
@@ -62,7 +68,7 @@ namespace ArendaPro
                 using (var checkUser = new SqlCommand(
     @"SELECT COUNT(1) FROM public.users WHERE username = @username", conn))
                 {
-                    checkUser.Parameters.AddWithValue("username", username);
+                    checkUser.Parameters.AddWithValue("@username", username);
                     bool userExists = Convert.ToInt32(await checkUser.ExecuteScalarAsync()) > 0;
                     if (userExists)
                     {
@@ -79,16 +85,16 @@ namespace ArendaPro
           (@username, @password, @role, @first, @last, @middle,
            @mail, @passport, @issuedby, @issuedate)", conn))
                 {
-                    insertCmd.Parameters.AddWithValue("username", username);
-                    insertCmd.Parameters.AddWithValue("password", hash);
-                    insertCmd.Parameters.AddWithValue("role", role);
-                    insertCmd.Parameters.AddWithValue("first", firstName);
-                    insertCmd.Parameters.AddWithValue("last", lastName);
-                    insertCmd.Parameters.AddWithValue("middle", middleName);
-                    insertCmd.Parameters.AddWithValue("mail", email);
-                    insertCmd.Parameters.AddWithValue("passport", passport);
-                    insertCmd.Parameters.AddWithValue("issuedby", issuedBy);
-                    insertCmd.Parameters.AddWithValue("issuedate", issueDate ?? DateTime.Now);
+                    insertCmd.Parameters.AddWithValue("@username", username);
+                    insertCmd.Parameters.AddWithValue("@password", hash);
+                    insertCmd.Parameters.AddWithValue("@role", role);
+                    insertCmd.Parameters.AddWithValue("@first", firstName);
+                    insertCmd.Parameters.AddWithValue("@last", lastName);
+                    insertCmd.Parameters.AddWithValue("@middle", middleName);
+                    insertCmd.Parameters.AddWithValue("@mail", email);
+                    insertCmd.Parameters.AddWithValue("@passport", passport);
+                    insertCmd.Parameters.AddWithValue("@issuedby", issuedBy);
+                    insertCmd.Parameters.AddWithValue("@issuedate", issueDate ?? DateTime.Now);
 
                     await insertCmd.ExecuteNonQueryAsync();
                 }
