@@ -11,7 +11,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
-using Word = Microsoft.Office.Interop.Word;
 namespace ArendaPro
 {
     public class StringToVisibilityConverter : IValueConverter
@@ -605,24 +604,26 @@ ORDER BY c.id ASC;
                 Process.Start(new ProcessStartInfo(ci.ReturnReportPath) { UseShellExecute = true });
             }
         }
+        private static int CalculateUnusedDays(DateTime plannedEndDate, TimeSpan plannedEndTime, DateTime actualReturnDateTime)
+        {
+            var plannedEnd = plannedEndDate.Date + plannedEndTime;
+            if (actualReturnDateTime >= plannedEnd)
+                return 0;
+
+            int unusedDays = (plannedEndDate.Date - actualReturnDateTime.Date).Days;
+            return Math.Max(0, unusedDays);
+        }
+
         private void CompleteRental_Click(object sender, RoutedEventArgs e)
         {
-            if (!(sender is Button btn && btn.DataContext is ContractInfo ci)) return;
+            if (!(sender is Button btn && btn.DataContext is ContractInfo contract)) return;
 
-            bool isEarlyReturn = DateTime.Now < ci.EndDate + ci.TimeEnd;
-            decimal refundAmount = 0;
-
-            if (isEarlyReturn)
-            {
-                int unusedDays = (ci.EndDate.Date - DateTime.Now.Date).Days;
-
-                if (unusedDays > 0)
-                {
-                    refundAmount = unusedDays * ci.Price;
-                }
-            }
+            var actualReturnDateTime = DateTime.Now;
+            bool isEarlyReturn = actualReturnDateTime < contract.EndDate + contract.TimeEnd;
+            int unusedDays = CalculateUnusedDays(contract.EndDate, contract.TimeEnd, actualReturnDateTime);
+            decimal refundAmount = unusedDays > 0 ? unusedDays * contract.Price : 0m;
             var dlg = new ReturnReportWindow(
-                contractId: ci.ContractId,
+                contractId: contract.ContractId,
                 isEarly: isEarlyReturn,
                 employeeName: currentUserName)
             {
@@ -639,16 +640,32 @@ ORDER BY c.id ASC;
             try
             {
                 // 1. Завершаем договор (НЕ cancelled)
+                var newPaidAmount = Math.Max(0m, contract.PaidAmount - refundAmount);
+                var paymentStatus = refundAmount > 0
+                    ? "refund_pending"
+                    : (newPaidAmount <= 0m ? "unpaid" : "paid");
+
                 database.ExecuteNonQuery(
                     @"UPDATE contracts
               SET status = 'completed',
-                  returned_at = GETDATE(),
+                  contract_stage = CASE WHEN @refundAmount > 0 THEN 'completed_early' ELSE 'completed' END,
+                  payment_status = @paymentStatus,
+                  actual_return_date = @actualReturnDate,
+                  return_reason = CASE WHEN @refundAmount > 0 THEN 'Досрочное завершение договора' ELSE return_reason END,
+                  refund_amount = @refundAmount,
+                  unpaid_amount = 0,
+                  paid_amount = @paidAmount,
+                  returned_at = @actualReturnDate,
                   return_report_path = @path
               WHERE id = @id",
                     new Dictionary<string, object>
                     {
-                        ["@id"] = ci.ContractId,
-                        ["@path"] = reportPath
+                        ["@id"] = contract.ContractId,
+                        ["@path"] = reportPath,
+                        ["@refundAmount"] = refundAmount,
+                        ["@actualReturnDate"] = actualReturnDateTime,
+                        ["@paymentStatus"] = paymentStatus,
+                        ["@paidAmount"] = newPaidAmount
                     });
 
                 // 2. Освобождаем машину
@@ -656,12 +673,16 @@ ORDER BY c.id ASC;
                     "UPDATE cars SET status = 'available' WHERE id = @car",
                     new Dictionary<string, object>
                     {
-                        ["@car"] = ci.CarId
+                        ["@car"] = contract.CarId
                     });
 
                 tr.Commit();
 
-                MessageBox.Show("Аренда завершена, отчёт сохранён.",
+                var message = refundAmount > 0
+                    ? $"Аренда завершена досрочно. Возврат клиенту: {refundAmount:N2}. Статус платежа: refund_pending."
+                    : "Аренда завершена, отчёт сохранён.";
+
+                MessageBox.Show(message,
                     "Готово",
                     MessageBoxButton.OK,
                     MessageBoxImage.Information);
@@ -686,8 +707,11 @@ ORDER BY c.id ASC;
 
         private void OpenFile_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is Button btn && btn.DataContext is ContractInfo contract)
+            if (sender is Button btn)
             {
+                var contract = btn.DataContext as ContractInfo;
+                if (contract == null) return;
+
                 string encryptedPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, contract.FilePath);
 
                 if (!File.Exists(encryptedPath))
@@ -710,8 +734,11 @@ ORDER BY c.id ASC;
 
         private void PrintFile_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is Button btn && btn.DataContext is ContractInfo contract)
+            if (sender is Button btn)
             {
+                var contract = btn.DataContext as ContractInfo;
+                if (contract == null) return;
+
                 string encryptedPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, contract.FilePath);
 
                 if (!File.Exists(encryptedPath))
@@ -736,34 +763,42 @@ ORDER BY c.id ASC;
         }
         private void PrintWordDocument(string filePath)
         {
-            Word.Application wordApp = null;
-            Word.Document wordDoc = null;
+            Microsoft.Office.Interop.Word.Application wordApplication = null;
+            Microsoft.Office.Interop.Word.Document wordDocument = null;
 
             try
             {
                 System.Threading.Thread.Sleep(500);
-                wordApp = new Word.Application();
-                wordApp.Visible = false;
-                wordDoc = wordApp.Documents.Open(filePath, ReadOnly: true);
-                wordDoc.PrintOut(Background: false, Copies: 1, Range: Word.WdPrintOutRange.wdPrintAllDocument);
+                wordApplication = new Microsoft.Office.Interop.Word.Application();
+                wordApplication.Visible = false;
+
+                wordDocument = wordApplication.Documents.Open(filePath, ReadOnly: true);
+                wordDocument.PrintOut(
+                    Background: false,
+                    Copies: 1,
+                    Range: Microsoft.Office.Interop.Word.WdPrintOutRange.wdPrintAllDocument);
+
                 System.Threading.Thread.Sleep(1000);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка печати через Word:\n{ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Ошибка печати через Word:
+{ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
-                if (wordDoc != null)
+                if (wordDocument != null)
                 {
-                    wordDoc.Close(false);
-                    System.Runtime.InteropServices.Marshal.ReleaseComObject(wordDoc);
+                    wordDocument.Close(false);
+                    System.Runtime.InteropServices.Marshal.ReleaseComObject(wordDocument);
                 }
-                if (wordApp != null)
+
+                if (wordApplication != null)
                 {
-                    wordApp.Quit(false);
-                    System.Runtime.InteropServices.Marshal.ReleaseComObject(wordApp);
+                    wordApplication.Quit(false);
+                    System.Runtime.InteropServices.Marshal.ReleaseComObject(wordApplication);
                 }
+
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
             }
