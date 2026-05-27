@@ -782,8 +782,7 @@ ORDER BY c.id ASC;
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка печати через Word:
-{ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Ошибка печати через Word:\n{ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
