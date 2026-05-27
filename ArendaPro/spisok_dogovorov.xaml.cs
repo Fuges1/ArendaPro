@@ -24,8 +24,6 @@ namespace ArendaPro
     }
     public class StatusToDeleteVisibilityConverter : IValueConverter
     {
-        public string NameFull;
-
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return (value as string) == "not_confirmed"

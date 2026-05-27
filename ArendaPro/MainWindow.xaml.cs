@@ -8,7 +8,7 @@ namespace ArendaPro
 
     public partial class MainWindow : Window
     {
-        private LoginWindow loginWindow;
+        private readonly LoginWindow loginWindow;
         private readonly string userRole;
         private readonly string fullName;
 

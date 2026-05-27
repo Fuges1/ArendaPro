@@ -35,7 +35,8 @@ namespace ArendaPro
             if (File.Exists(file))
             {
                 string json = File.ReadAllText(file);
-                list = JsonSerializer.Deserialize<List<MainWindow.DbConnectionConfig>>(json);
+                list = JsonSerializer.Deserialize<List<MainWindow.DbConnectionConfig>>(json)
+                    ?? new List<MainWindow.DbConnectionConfig>();
             }
 
             list.Add(newConn);
