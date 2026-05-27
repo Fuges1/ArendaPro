@@ -15,6 +15,7 @@ namespace ArendaPro
             this.connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
         }
 
+        // Логика: метод GetConnection выполняет соответствующий шаг бизнес-процесса этого окна/сервиса.
         public SqlConnection GetConnection() => new(connectionString);
 
         public DataTable ExecuteQuery(string query)

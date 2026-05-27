@@ -179,6 +179,7 @@ VALUES
             public bool FromHistory { get; set; }
             public decimal? OriginalPrice { get; set; }
             public event PropertyChangedEventHandler PropertyChanged;
+            // Логика: метод OnChanged выполняет соответствующий шаг бизнес-процесса этого окна/сервиса.
             private void OnChanged(string p) =>
                 PropertyChanged?.Invoke(this, new(p));
         }
@@ -589,6 +590,7 @@ WHERE end_date < @today;
             LoadRows();
         }
 
+        // Логика: метод BtnClose_Click выполняет соответствующий шаг бизнес-процесса этого окна/сервиса.
         private void BtnClose_Click(object s, RoutedEventArgs e) => Close();
     }
 }

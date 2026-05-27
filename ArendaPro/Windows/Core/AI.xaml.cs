@@ -21,6 +21,7 @@ namespace ArendaPro
             // Пример кода для анализа
             CodeTextBox.Text = @"public class Calculator 
 {
+    // Логика: метод Add выполняет соответствующий шаг бизнес-процесса этого окна/сервиса.
     public int Add(int a, int b) => a + b;
 }";
         }

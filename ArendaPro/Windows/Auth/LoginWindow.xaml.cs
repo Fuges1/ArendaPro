@@ -94,12 +94,14 @@ namespace ArendaPro
             }
         }
 
+        // Логика: метод txtUsername_TextChanged выполняет соответствующий шаг бизнес-процесса этого окна/сервиса.
         private void txtUsername_TextChanged(object sender, TextChangedEventArgs e) =>
             txtUsernamePlaceholder.Visibility =
                 string.IsNullOrWhiteSpace(txtUsername.Text)
                     ? Visibility.Visible
                     : Visibility.Collapsed;
 
+        // Логика: метод txtPassword_PasswordChanged выполняет соответствующий шаг бизнес-процесса этого окна/сервиса.
         private void txtPassword_PasswordChanged(object sender, RoutedEventArgs e) =>
             txtPasswordPlaceholder.Visibility =
                 string.IsNullOrWhiteSpace(txtPassword.Password)
@@ -119,6 +121,7 @@ namespace ArendaPro
             ErrorTextBlock.Visibility = Visibility.Visible;
         }
 
+        // Логика: метод IsBcryptHash выполняет соответствующий шаг бизнес-процесса этого окна/сервиса.
         private bool IsBcryptHash(string s) =>
           !string.IsNullOrEmpty(s) &&
           (s.StartsWith("$2a$") || s.StartsWith("$2b$") || s.StartsWith("$2y$"));

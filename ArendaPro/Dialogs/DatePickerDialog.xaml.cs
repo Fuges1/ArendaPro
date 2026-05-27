@@ -19,6 +19,7 @@ namespace ArendaPro
             SelectedDate = dp.SelectedDate ?? DateTime.Now;
             DialogResult = true;
         }
+        // Логика: метод Cancel_Click выполняет соответствующий шаг бизнес-процесса этого окна/сервиса.
         private void Cancel_Click(object s, RoutedEventArgs e) => Close();
     }
 }
