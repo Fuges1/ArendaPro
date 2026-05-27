@@ -185,6 +185,30 @@
                             Width="Auto"
                             MinWidth="120"/>
 
+                        <DataGridTextColumn 
+                            Header="Этап" 
+                            Binding="{Binding ContractStageDisplay}"
+                            Width="Auto"
+                            MinWidth="130"/>
+
+                        <DataGridTextColumn 
+                            Header="Оплата" 
+                            Binding="{Binding PaymentStatusDisplay}"
+                            Width="Auto"
+                            MinWidth="140"/>
+
+                        <DataGridTextColumn 
+                            Header="Возврат" 
+                            Binding="{Binding RefundAmountDisplay}"
+                            Width="Auto"
+                            MinWidth="100"/>
+
+                        <DataGridTextColumn 
+                            Header="Факт. возврат" 
+                            Binding="{Binding ActualReturnDateDisplay}"
+                            Width="Auto"
+                            MinWidth="140"/>
+
                         <DataGridTemplateColumn
                             x:Name="FileColumn"
                             Header="Файл"

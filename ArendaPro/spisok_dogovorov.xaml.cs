@@ -192,6 +192,29 @@ namespace ArendaPro
                 "completed" => "Завершён",
                 _ => Status
             };
+
+            public string PaymentStatusDisplay => PaymentStatus switch
+            {
+                "paid" => "Оплачен",
+                "unpaid" => "Не оплачен",
+                "refund_pending" => "Возврат в обработке",
+                "refunded" => "Возврат выполнен",
+                _ => string.IsNullOrWhiteSpace(PaymentStatus) ? "—" : PaymentStatus
+            };
+
+            public string ContractStageDisplay => ContractStage switch
+            {
+                "active" => "Активный",
+                "completed" => "Завершён",
+                "completed_early" => "Завершён досрочно",
+                _ => string.IsNullOrWhiteSpace(ContractStage) ? "—" : ContractStage
+            };
+
+            public string ActualReturnDateDisplay => ActualReturnDate.HasValue
+                ? ActualReturnDate.Value.ToString("dd.MM.yyyy HH:mm")
+                : "—";
+
+            public string RefundAmountDisplay => RefundAmount > 0 ? RefundAmount.ToString("N2") : "—";
       
             public decimal BaseAmount => Price;
 
@@ -217,6 +240,9 @@ namespace ArendaPro
             FilterColumnBox.Items.Add(new ComboBoxItem { Content = "ФИО клиента", Tag = nameof(ContractInfo.FullName) });
             FilterColumnBox.Items.Add(new ComboBoxItem { Content = "Автомобиль", Tag = nameof(ContractInfo.CarInfo) });
             FilterColumnBox.Items.Add(new ComboBoxItem { Content = "Статус", Tag = nameof(ContractInfo.StatusDescription) });
+            FilterColumnBox.Items.Add(new ComboBoxItem { Content = "Этап", Tag = nameof(ContractInfo.ContractStageDisplay) });
+            FilterColumnBox.Items.Add(new ComboBoxItem { Content = "Статус оплаты", Tag = nameof(ContractInfo.PaymentStatusDisplay) });
+            FilterColumnBox.Items.Add(new ComboBoxItem { Content = "Сумма возврата", Tag = nameof(ContractInfo.RefundAmount) });
             FilterColumnBox.Items.Add(new ComboBoxItem { Content = "К оплате", Tag = nameof(ContractInfo.DebtAmount) });
 
             FilterColumnBox.SelectedIndex = 0;
