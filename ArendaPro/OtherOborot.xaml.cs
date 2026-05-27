@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -369,5 +370,4 @@ ORDER BY c.start_date DESC;
         }
     }
 }
-
 
