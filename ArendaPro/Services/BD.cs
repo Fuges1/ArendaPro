@@ -39,6 +39,7 @@ namespace ArendaPro
             using var conn = new SqlConnection(connectionString);
             conn.Open();
             using var cmd = new SqlCommand(sql, conn);
+            // Централизованно привязываем параметры, чтобы одинаково обрабатывать null и имена @param.
             AddDictionaryParameters(cmd, parameters);
 
             using var reader = cmd.ExecuteReader();
@@ -53,6 +54,7 @@ namespace ArendaPro
             conn.Open();
 
             using var cmd = new SqlCommand(sql, conn);
+            // Централизованно привязываем параметры, чтобы одинаково обрабатывать null и имена @param.
             AddDictionaryParameters(cmd, parameters);
 
             return cmd.ExecuteNonQuery();
@@ -136,6 +138,7 @@ namespace ArendaPro
                 AddObjectParameters(cmd, parameters, addAtPrefix: true);
             }
 
+            // Выполняем чтение асинхронно и сразу загружаем в DataTable для UI-слоя.
             using var reader = await cmd.ExecuteReaderAsync();
             dt.Load(reader);
             return dt;
@@ -153,6 +156,7 @@ namespace ArendaPro
             {
                 var sqlParam = command.CreateParameter();
                 sqlParam.ParameterName = NormalizeParameterName(param.Key);
+                // Для полей даты принудительно убираем время, когда это ожидается SQL-схемой.
                 if (convertDateTimeToDate && param.Value is DateTime dateValue)
                 {
                     sqlParam.Value = dateValue.Date;

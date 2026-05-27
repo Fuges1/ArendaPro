@@ -43,6 +43,7 @@ namespace ArendaPro
 
             try
             {
+                // Шаг 1: забираем ввод пользователя из UI и нормализуем пробелы.
                 string username = txtUsername.Text.Trim();
                 string password = txtPassword.Password.Trim();
 
@@ -58,6 +59,7 @@ namespace ArendaPro
                     return;
                 }
 
+                // Шаг 2: открываем соединение только после базовых валидаций формы.
                 using var conn = new SqlConnection(connectionString);
                 await conn.OpenAsync();
 
@@ -67,11 +69,13 @@ namespace ArendaPro
                     return;
                 }
 
+                // Шаг 3: получаем пароль из БД и определяем формат хеша.
                 var (storedPwd, isBcrypt) = await GetPasswordWithDiagnostics(conn, username);
                 bool isValid = isBcrypt
                     ? BCrypt.Net.BCrypt.Verify(password, storedPwd)
                     : password == storedPwd;
 
+                // Шаг 4: при успешном входе мигрируем legacy-пароль на bcrypt без участия пользователя.
                 if (!isBcrypt && isValid)
                     await UpgradePasswordToBcrypt(conn, username, password);
 
