@@ -15,17 +15,20 @@ namespace ArendaPro
     // Логика класса: StringToVisibilityConverter содержит сценарии этого модуля, управляет данными и координирует взаимодействие UI с сервисами.
     public class StringToVisibilityConverter : IValueConverter
     {
+        // Метод Convert: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #1).
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
             => string.IsNullOrWhiteSpace(value as string)
                 ? Visibility.Collapsed
                 : Visibility.Visible;
 
+        // Метод ConvertBack: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #2).
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
             => throw new NotImplementedException();
     }
     // Логика класса: StatusToDeleteVisibilityConverter содержит сценарии этого модуля, управляет данными и координирует взаимодействие UI с сервисами.
     public class StatusToDeleteVisibilityConverter : IValueConverter
     {
+        // Метод Convert: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #3).
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return (value as string) == "not_confirmed"
@@ -33,6 +36,7 @@ namespace ArendaPro
         : Visibility.Collapsed;
         }
 
+        // Метод ConvertBack: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #4).
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
@@ -42,6 +46,7 @@ namespace ArendaPro
     public class StatusToCompleteVisibilityConverter : IValueConverter
     {
    
+        // Метод Convert: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #5).
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return (value as string) == "active"
@@ -49,6 +54,7 @@ namespace ArendaPro
                 : Visibility.Collapsed;
         }
 
+        // Метод ConvertBack: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #6).
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotSupportedException();
@@ -60,11 +66,13 @@ namespace ArendaPro
     {
         public static BoolToBrushConverter Instance { get; } = new BoolToBrushConverter();
 
+        // Метод Convert: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #7).
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return (bool)value ? Brushes.LightCoral : Brushes.LightGreen;
         }
 
+        // Метод ConvertBack: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #8).
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
@@ -73,6 +81,7 @@ namespace ArendaPro
     // Логика класса: BoolToConfirmCancelButtonConverter содержит сценарии этого модуля, управляет данными и координирует взаимодействие UI с сервисами.
     public class BoolToConfirmCancelButtonConverter : IValueConverter
     {
+        // Метод Convert: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #9).
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             bool isActive = (bool)value;
@@ -80,6 +89,7 @@ namespace ArendaPro
 
         }
 
+        // Метод ConvertBack: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #10).
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return value.ToString() == "Отменить";
@@ -88,6 +98,7 @@ namespace ArendaPro
     // Логика класса: StatusToToggleVisibilityConverter содержит сценарии этого модуля, управляет данными и координирует взаимодействие UI с сервисами.
     public class StatusToToggleVisibilityConverter : IValueConverter
     {
+        // Метод Convert: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #11).
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             string status = value as string;
@@ -96,6 +107,7 @@ namespace ArendaPro
                : Visibility.Collapsed;
         }
 
+        // Метод ConvertBack: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #12).
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
@@ -105,6 +117,7 @@ namespace ArendaPro
     // Логика класса: AdminAndStatusToVisibilityConverter содержит сценарии этого модуля, управляет данными и координирует взаимодействие UI с сервисами.
     public class AdminAndStatusToVisibilityConverter : IMultiValueConverter
     {
+        // Метод Convert: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #13).
         public object Convert(object[] values, Type t, object p, CultureInfo c)
         {
             bool isAdmin = values.Length > 0 && values[0] is bool b && b;
@@ -116,6 +129,7 @@ namespace ArendaPro
                    ? Visibility.Visible
                    : Visibility.Collapsed;
         }
+        // Метод ConvertBack: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #14).
         public object[] ConvertBack(object v, Type[] tt, object p, CultureInfo c)
             => throw new NotImplementedException();
     }
@@ -123,6 +137,7 @@ namespace ArendaPro
     public class FileNameConverter : IValueConverter
     {
      
+        // Метод Convert: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #15).
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var path = value as string;
@@ -132,6 +147,7 @@ namespace ArendaPro
         }
 
       
+        // Метод ConvertBack: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #16).
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
             => throw new NotSupportedException();
     }
@@ -267,6 +283,7 @@ namespace ArendaPro
             MarkExpiredContractsAsCompleted();
             LoadContracts();
         }
+        // Метод Compare: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #17).
         private static bool Compare(ContractInfo c, string col, string op, string val)
         {
             object v = typeof(ContractInfo).GetProperty(col)?.GetValue(c);
@@ -287,11 +304,13 @@ namespace ArendaPro
                 default: return v.ToString().IndexOf(val, StringComparison.OrdinalIgnoreCase) >= 0;
             }
         }
+        // Метод ConvertBack: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #18).
         public object ConvertBack(object value, Type t, object p, CultureInfo c)
         {
             return value?.ToString() == "Возврат";
         }
 
+        // Метод LoadContracts: инициализирует состояние модуля при старте: загружает данные и подготавливает элементы экрана к работе (комментарий #19).
         private void LoadContracts()
         {
             try
@@ -469,6 +488,7 @@ ORDER BY c.id ASC;
                 );
             }
         }
+        // Метод ClearFilter_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #20).
         private void ClearFilter_Click(object sender, RoutedEventArgs e)
         {
 
@@ -479,6 +499,7 @@ ORDER BY c.id ASC;
         }
 
 
+        // Метод OpenReport_Click_ochet: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #21).
         private void OpenReport_Click_ochet(object sender, RoutedEventArgs e)
         {
             if (sender is Button btn && btn.DataContext is ContractInfo ci && !string.IsNullOrEmpty(ci.ReturnReportPath))
@@ -494,6 +515,7 @@ ORDER BY c.id ASC;
                 }
             }
         }
+        // Метод ApplyFilter_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #22).
         private void ApplyFilter_Click(object s, RoutedEventArgs e)
         {
             var col = FilterColumnBox.SelectedItem as ComboBoxItem;
@@ -515,6 +537,7 @@ ORDER BY c.id ASC;
 
             ContractsGrid.ItemsSource = filtered;
         }
+        // Метод MarkExpiredContractsAsCompleted: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #23).
         private void MarkExpiredContractsAsCompleted()
         {
             var now = DateTime.Now;
@@ -547,6 +570,7 @@ ORDER BY c.id ASC;
                 }
             }
         }
+        // Метод ToggleContractStatus_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #24).
         private void ToggleContractStatus_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button btn && btn.DataContext is ContractInfo contract)
@@ -563,6 +587,7 @@ ORDER BY c.id ASC;
         }
 
 
+        // Метод Prolong_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #25).
         private void Prolong_Click(object s, RoutedEventArgs e)
         {
             if (s is Button btn && btn.DataContext is ContractInfo ci)
@@ -615,6 +640,7 @@ ORDER BY c.id ASC;
                 }
             }
         }
+        // Метод OpenReport_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #26).
         private void OpenReport_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button btn && btn.DataContext is ContractInfo ci && !string.IsNullOrEmpty(ci.ReturnReportPath))
@@ -622,6 +648,7 @@ ORDER BY c.id ASC;
                 Process.Start(new ProcessStartInfo(ci.ReturnReportPath) { UseShellExecute = true });
             }
         }
+        // Метод CalculateUnusedDays: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #27).
         private static int CalculateUnusedDays(DateTime plannedEndDate, TimeSpan plannedEndTime, DateTime actualReturnDateTime)
         {
             var plannedEnd = plannedEndDate.Date + plannedEndTime;
@@ -632,6 +659,7 @@ ORDER BY c.id ASC;
             return Math.Max(0, unusedDays);
         }
 
+        // Метод CompleteRental_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #28).
         private void CompleteRental_Click(object sender, RoutedEventArgs e)
         {
             if (!(sender is Button btn && btn.DataContext is ContractInfo contract)) return;
@@ -713,6 +741,7 @@ ORDER BY c.id ASC;
                 MessageBox.Show("Ошибка завершения: " + ex.Message);
             }
         }
+        // Метод Pay_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #29).
         private void Pay_Click(object s, RoutedEventArgs e)
         {
             if (s is Button btn && btn.DataContext is ContractInfo ci)
@@ -723,6 +752,7 @@ ORDER BY c.id ASC;
             }
         }
 
+        // Метод OpenFile_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #30).
         private void OpenFile_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button btn)
@@ -750,6 +780,7 @@ ORDER BY c.id ASC;
             }
         }
 
+        // Метод PrintFile_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #31).
         private void PrintFile_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button btn)
@@ -779,6 +810,7 @@ ORDER BY c.id ASC;
                 }
             }
         }
+        // Метод PrintWordDocument: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #32).
         private void PrintWordDocument(string filePath)
         {
             Microsoft.Office.Interop.Word.Application wordApplication = null;
@@ -821,6 +853,7 @@ ORDER BY c.id ASC;
             }
         }
 
+        // Метод PrintUsingWindowsDefault: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #33).
         private void PrintUsingWindowsDefault(string filePath)
         {
             try
@@ -844,6 +877,7 @@ ORDER BY c.id ASC;
             }
         }
 
+        // Метод DeleteContract_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #34).
         private void DeleteContract_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button btn && btn.DataContext is ContractInfo contract)
@@ -881,6 +915,7 @@ ORDER BY c.id ASC;
             }
         }
 
+        // Метод ConfirmContract_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #35).
         private async void ConfirmContract_Click(object sender, RoutedEventArgs e)
         {
             if (!(sender is Button btn && btn.DataContext is ContractInfo contract)) return;
@@ -960,6 +995,7 @@ new Dictionary<string, object>
             }
         }
 
+        // Метод CancelConfirm_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #36).
         private async void CancelConfirm_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button btn && btn.DataContext is ContractInfo contract)
@@ -1030,6 +1066,7 @@ new Dictionary<string, object>
             }
         }
 
+        // Метод SearchBox_GotFocus: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #37).
         private void SearchBox_GotFocus(object sender, RoutedEventArgs e)
         {
             if (SearchBox.Text == "Введите запрос")
@@ -1039,6 +1076,7 @@ new Dictionary<string, object>
             }
         }
 
+        // Метод SearchBox_LostFocus: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #38).
         private void SearchBox_LostFocus(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(SearchBox.Text))
@@ -1048,6 +1086,7 @@ new Dictionary<string, object>
             }
         }
 
+        // Метод SearchBox_TextChanged: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #39).
         private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (ContractsGrid == null || allContracts == null)
@@ -1073,10 +1112,12 @@ new Dictionary<string, object>
             ContractsGrid.ItemsSource = filtered;
         }
 
+        // Метод BackButton_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #40).
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
         }
+        // Метод ContractsGrid_SelectionChanged: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #41).
         private void ContractsGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 

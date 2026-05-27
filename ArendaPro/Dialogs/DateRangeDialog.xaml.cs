@@ -17,6 +17,7 @@ namespace ArendaPro
             EndDatePicker.SelectedDate = DateTime.Today.AddDays(1);
         }
 
+        // Метод OkButton_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #1).
         private void OkButton_Click(object sender, RoutedEventArgs e)
         {
             if (StartDatePicker.SelectedDate == null || EndDatePicker.SelectedDate == null)
@@ -37,6 +38,7 @@ namespace ArendaPro
             DialogResult = true;
         }
 
+        // Метод CancelButton_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #2).
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             DialogResult = false;

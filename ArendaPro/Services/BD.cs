@@ -17,8 +17,10 @@ namespace ArendaPro
         }
 
         // Логика: метод GetConnection реализует отдельный шаг бизнес-логики, связывая входные данные, проверки и итоговое действие.
+        // Метод GetConnection: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #1).
         public SqlConnection GetConnection() => new(connectionString);
 
+        // Метод ExecuteQuery: выполняет операцию доступа к БД: формирует команду, связывает параметры и возвращает контролируемый результат (комментарий #2).
         public DataTable ExecuteQuery(string query)
         {
             var dt = new DataTable();
@@ -30,6 +32,7 @@ namespace ArendaPro
             return dt;
         }
 
+        // Метод ExecuteQuery: выполняет операцию доступа к БД: формирует команду, связывает параметры и возвращает контролируемый результат (комментарий #3).
         public DataTable ExecuteQuery(string sql, Dictionary<string, object> parameters)
         {
             var dt = new DataTable();
@@ -43,6 +46,7 @@ namespace ArendaPro
             return dt;
         }
 
+        // Метод ExecuteNonQuery: выполняет операцию доступа к БД: формирует команду, связывает параметры и возвращает контролируемый результат (комментарий #4).
         public int ExecuteNonQuery(string sql, Dictionary<string, object> parameters)
         {
             using var conn = new SqlConnection(connectionString);
@@ -78,6 +82,7 @@ namespace ArendaPro
             }
         }
 
+        // Метод BeginTransaction: выполняет операцию доступа к БД: формирует команду, связывает параметры и возвращает контролируемый результат (комментарий #5).
         public SqlTransaction BeginTransaction()
         {
             var conn = new SqlConnection(connectionString);
@@ -101,6 +106,7 @@ namespace ArendaPro
             return (T)Convert.ChangeType(result, typeof(T));
         }
 
+        // Метод ExecuteNonQueryAsync: выполняет операцию доступа к БД: формирует команду, связывает параметры и возвращает контролируемый результат (комментарий #6).
         public async Task<int> ExecuteNonQueryAsync(string sql, object parameters = null)
         {
             using var conn = new SqlConnection(connectionString);
@@ -116,6 +122,7 @@ namespace ArendaPro
             return await cmd.ExecuteNonQueryAsync();
         }
 
+        // Метод ExecuteQueryAsync: выполняет операцию доступа к БД: формирует команду, связывает параметры и возвращает контролируемый результат (комментарий #7).
         public async Task<DataTable> ExecuteQueryAsync(string sql, object parameters = null)
         {
             var dt = new DataTable();
@@ -134,6 +141,7 @@ namespace ArendaPro
             return dt;
         }
 
+        // Метод AddDictionaryParameters: добавляет новую сущность в доменную коллекцию и синхронизирует зависимые визуальные и вычислительные представления (комментарий #8).
         private static void AddDictionaryParameters(SqlCommand command, Dictionary<string, object> parameters, bool convertDateTimeToDate = false)
         {
             if (parameters == null)
@@ -159,6 +167,7 @@ namespace ArendaPro
             }
         }
 
+        // Метод AddObjectParameters: добавляет новую сущность в доменную коллекцию и синхронизирует зависимые визуальные и вычислительные представления (комментарий #9).
         private static void AddObjectParameters(SqlCommand command, object parameters, bool addAtPrefix)
         {
             var props = parameters.GetType().GetProperties();
@@ -169,6 +178,7 @@ namespace ArendaPro
             }
         }
 
+        // Метод NormalizeParameterName: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #10).
         private static string NormalizeParameterName(string parameterName)
             => parameterName.StartsWith("@", StringComparison.Ordinal) ? parameterName : "@" + parameterName;
 

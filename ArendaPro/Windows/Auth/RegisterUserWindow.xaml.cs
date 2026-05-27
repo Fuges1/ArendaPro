@@ -17,6 +17,7 @@ namespace ArendaPro
             connectionString = ConfigurationManager.ConnectionStrings["DbConnection"]?.ConnectionString;
         }
 
+        // Метод RegisterButton_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #1).
         private async void RegisterButton_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -111,6 +112,7 @@ namespace ArendaPro
         }
 
 
+        // Метод CancelButton_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #2).
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             this.Close();

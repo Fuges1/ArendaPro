@@ -34,6 +34,7 @@ namespace ArendaPro
 
         public LoginWindow() => InitializeComponent();
 
+        // Метод LoginButton_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #1).
         private async void LoginButton_Click(object sender, RoutedEventArgs e)
         {
             if (_isLoggingIn) return;
@@ -97,6 +98,7 @@ namespace ArendaPro
         }
 
         // Логика: метод txtUsername_TextChanged реализует отдельный шаг бизнес-логики, связывая входные данные, проверки и итоговое действие.
+        // Метод txtUsername_TextChanged: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #2).
         private void txtUsername_TextChanged(object sender, TextChangedEventArgs e) =>
             txtUsernamePlaceholder.Visibility =
                 string.IsNullOrWhiteSpace(txtUsername.Text)
@@ -104,12 +106,14 @@ namespace ArendaPro
                     : Visibility.Collapsed;
 
         // Логика: метод txtPassword_PasswordChanged реализует отдельный шаг бизнес-логики, связывая входные данные, проверки и итоговое действие.
+        // Метод txtPassword_PasswordChanged: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #3).
         private void txtPassword_PasswordChanged(object sender, RoutedEventArgs e) =>
             txtPasswordPlaceholder.Visibility =
                 string.IsNullOrWhiteSpace(txtPassword.Password)
                     ? Visibility.Visible
                     : Visibility.Collapsed;
 
+        // Метод SetUiEnabled: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #4).
         private void SetUiEnabled(bool enabled)
         {
             LoginButton.IsEnabled = enabled;
@@ -117,6 +121,7 @@ namespace ArendaPro
             txtPassword.IsEnabled = enabled;
         }
 
+        // Метод ShowError: открывает/отображает следующий экранный контекст и передаёт туда необходимые данные текущей операции (комментарий #5).
         private void ShowError(string msg)
         {
             ErrorTextBlock.Text = msg;
@@ -124,9 +129,11 @@ namespace ArendaPro
         }
 
         // Логика: метод IsBcryptHash реализует отдельный шаг бизнес-логики, связывая входные данные, проверки и итоговое действие.
+        // Метод IsBcryptHash: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #6).
         private bool IsBcryptHash(string s) =>
           !string.IsNullOrEmpty(s) &&
           (s.StartsWith("$2a$") || s.StartsWith("$2b$") || s.StartsWith("$2y$"));
+        // Метод CheckUserExists: проводит целевую валидацию условий и сообщает, можно ли безопасно продолжать сценарий (комментарий #7).
         private async Task<bool> CheckUserExists(SqlConnection conn, string username)
         {
             using var cmd = new SqlCommand(
@@ -149,6 +156,7 @@ namespace ArendaPro
             return (pwd, isBC);
         }
 
+        // Метод UpgradePasswordToBcrypt: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #8).
         private async Task UpgradePasswordToBcrypt(
             SqlConnection conn, string username, string plainPwd)
         {
@@ -160,6 +168,7 @@ namespace ArendaPro
             await cmd.ExecuteNonQueryAsync();
         }
 
+        // Метод GetFullUserData: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #9).
         private async Task<UserData> GetFullUserData(SqlConnection conn, string username)
         {
             const string q = @"
@@ -191,6 +200,7 @@ WHERE username = @u";
 
             throw new InvalidOperationException("Данные пользователя не найдены");
         }
+        // Метод OpenMainWindow: открывает/отображает следующий экранный контекст и передаёт туда необходимые данные текущей операции (комментарий #10).
         private void OpenMainWindow(UserData u)
         {
             CurrentSession.UserId = u.UserId;
@@ -213,6 +223,7 @@ WHERE username = @u";
             Hide();
         }
 
+        // Метод ResetForRelogin: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #11).
         public void ResetForRelogin()
         {
             txtPassword.Password = "";

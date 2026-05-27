@@ -35,6 +35,7 @@ namespace ArendaPro
                 ReasonTextBox.Visibility = Visibility.Visible;
             }
         }
+        // Метод PhotosBorder_DragOver: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #1).
         private void PhotosBorder_DragOver(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop)) e.Effects = DragDropEffects.Copy;
@@ -42,6 +43,7 @@ namespace ArendaPro
             e.Handled = true;
         }
 
+        // Метод PhotosBorder_Drop: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #2).
         private void PhotosBorder_Drop(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
@@ -50,6 +52,7 @@ namespace ArendaPro
                 AddPhotos(files);
             }
         }
+        // Метод AddPhoto_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #3).
         private void AddPhoto_Click(object sender, RoutedEventArgs e)
         {
             var dlg = new OpenFileDialog
@@ -62,6 +65,7 @@ namespace ArendaPro
                 AddPhotos(dlg.FileNames);
         }
 
+        // Метод AddPhotos: добавляет новую сущность в доменную коллекцию и синхронизирует зависимые визуальные и вычислительные представления (комментарий #4).
         private void AddPhotos(string[] files)
         {
             foreach (var f in files)
@@ -78,6 +82,7 @@ namespace ArendaPro
             }
         }
 
+        // Метод Save_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #5).
         private void Save_Click(object sender, RoutedEventArgs e)
         {
             if (_isEarly && string.IsNullOrWhiteSpace(ReasonTextBox.Text))
@@ -162,6 +167,7 @@ namespace ArendaPro
         }
 
 
+        // Метод Cancel_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #6).
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
             DialogResult = false;

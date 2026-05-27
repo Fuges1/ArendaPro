@@ -13,6 +13,7 @@ namespace ArendaPro
             InitializeComponent();
         }
 
+        // Метод Add_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #1).
         private void Add_Click(object sender, RoutedEventArgs e)
         {
             string name = NameBox.Text.Trim();

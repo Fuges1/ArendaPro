@@ -88,6 +88,7 @@ namespace ArendaPro
             return gaps;
         }
 
+        // Метод GetOverlaps: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #1).
         private List<OverlapInfo> GetOverlaps(int carId, DateTime start, DateTime? end)
         {
             var list = new List<OverlapInfo>();
@@ -124,6 +125,7 @@ ORDER BY start_date;
         }
 
 
+        // Метод DeleteOverlaps: удаляет выбранные данные, после чего актуализирует связанные поля, фильтры и представления интерфейса (комментарий #2).
         private void DeleteOverlaps(
     int carId,
     DateTime start,
@@ -146,6 +148,7 @@ WHERE car_id = @car
             cmd.ExecuteNonQuery();
         }
 
+        // Метод InsertTemp: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #3).
         private void InsertTemp(
     int carId,
     decimal price,
@@ -183,6 +186,7 @@ VALUES
             public decimal? OriginalPrice { get; set; }
             public event PropertyChangedEventHandler PropertyChanged;
             // Логика: метод OnChanged реализует отдельный шаг бизнес-логики, связывая входные данные, проверки и итоговое действие.
+            // Метод OnChanged: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #4).
             private void OnChanged(string p) =>
                 PropertyChanged?.Invoke(this, new(p));
         }
@@ -196,6 +200,7 @@ ORDER BY c.id;";
 
 
 
+        // Метод Window_Loaded: инициализирует состояние модуля при старте: загружает данные и подготавливает элементы экрана к работе (комментарий #5).
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             _ready = true;
@@ -205,6 +210,7 @@ ORDER BY c.id;";
             LoadRows();
         }
 
+        // Метод BtnShow_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #6).
         private void BtnShow_Click(object s, RoutedEventArgs e)
         {
 
@@ -219,12 +225,14 @@ ORDER BY c.id;";
             }
             else _lastShowClick = now;
         }
+        // Метод BtnClear_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #7).
         private void BtnClear_Click(object s, RoutedEventArgs e)
         {
             DpStart.SelectedDate = DateTime.Today;
             DpEnd.SelectedDate = null;
             LoadRows();
         }
+        // Метод ShowExpiringSoon: открывает/отображает следующий экранный контекст и передаёт туда необходимые данные текущей операции (комментарий #8).
         private void ShowExpiringSoon()
         {
             var today = DateTime.Today;
@@ -271,6 +279,7 @@ ORDER BY end_date;
                 );
             }
         }
+        // Метод LoadRows: инициализирует состояние модуля при старте: загружает данные и подготавливает элементы экрана к работе (комментарий #9).
         private void LoadRows()
         {
 
@@ -412,13 +421,16 @@ ORDER BY end_date;
         // Логика класса: EndDateConverter содержит сценарии этого модуля, управляет данными и координирует взаимодействие UI с сервисами.
         public class EndDateConverter : IValueConverter
         {
+            // Метод Convert: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #10).
             public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
                 => value is DateTime dt ? dt.ToString("dd.MM.yyyy") : "∞";
+            // Метод ConvertBack: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #11).
             public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
                 => Binding.DoNothing;
         }
 
 
+        // Метод BtnSave_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #12).
         private void BtnSave_Click(object sender, RoutedEventArgs e)
         {
             var segments = (TariffGrid.ItemsSource as IEnumerable<TariffSegment>)?.ToList()
@@ -535,6 +547,7 @@ ORDER BY end_date;
 
 
 
+        // Метод DpStart_OnSelectedDateChanged: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #13).
         private void DpStart_OnSelectedDateChanged(object s, SelectionChangedEventArgs e)
         {
             if (DpStart.SelectedDate is DateTime start)
@@ -550,6 +563,7 @@ ORDER BY end_date;
                 DpEnd.SelectedDate = null;
             }
         }
+        // Метод SetUiState: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #14).
         private void SetUiState()
         {
             bool temp = ChkTemporary.IsChecked == true;
@@ -558,11 +572,13 @@ ORDER BY end_date;
             BtnShow.IsEnabled =
             BtnClear.IsEnabled = temp;
         }
+        // Метод DpEnd_OnSelectedDateChanged: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #15).
         private void DpEnd_OnSelectedDateChanged(object s, SelectionChangedEventArgs e)
         {
             if (DpEnd.SelectedDate < DpStart.SelectedDate)
                 DpEnd.SelectedDate = null;
         }
+        // Метод PurgeExpiredHistory: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #16).
         private void PurgeExpiredHistory()
         {
             using var cn = new SqlConnection(_cs);
@@ -577,6 +593,7 @@ WHERE end_date < @today;
 
             cmd.ExecuteNonQuery();
         }
+        // Метод ChkTemporary_OnChanged: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #17).
         private void ChkTemporary_OnChanged(object s, RoutedEventArgs e)
         {
             if (!_ready) return;
@@ -595,6 +612,7 @@ WHERE end_date < @today;
         }
 
         // Логика: обработчик BtnClose_Click реагирует на действие пользователя в UI, валидирует ввод и запускает нужный сценарий.
+        // Метод BtnClose_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #18).
         private void BtnClose_Click(object s, RoutedEventArgs e) => Close();
     }
 }

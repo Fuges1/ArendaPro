@@ -250,6 +250,7 @@ WHERE table_type = 'BASE TABLE'
                 }
             }
         }
+        // Метод AdjustPermissions: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #1).
         private void AdjustPermissions()
         {
             AddRowButton.Visibility =
@@ -296,6 +297,7 @@ WHERE table_type = 'BASE TABLE'
                 }
             }
         }
+        // Метод GenerateReport_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #2).
         private void GenerateReport_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("Формирование отчёта пока не реализовано.",
@@ -303,6 +305,7 @@ WHERE table_type = 'BASE TABLE'
                             MessageBoxButton.OK,
                             MessageBoxImage.Information);
         }
+        // Метод AddClientButton_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #3).
         private void AddClientButton_Click(object sender, RoutedEventArgs e)
         {
             if (selectedTable != "clients") return;
@@ -343,6 +346,7 @@ WHERE table_type = 'BASE TABLE'
             SaveTableSnapshot();
             currentTable.Rows.Add(addWindow.NewClientRow);
         }
+        // Метод NormalizePhone: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #4).
         private string NormalizePhone(string raw)
         {
             string digits = Regex.Replace(raw, @"\D", "");
@@ -353,6 +357,7 @@ WHERE table_type = 'BASE TABLE'
 
         private bool _isEditMode = false;
 
+        // Метод EditToggleButton_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #5).
         private void EditToggleButton_Click(object sender, RoutedEventArgs e)
         {
             _isEditMode = !_isEditMode;
@@ -364,6 +369,7 @@ WHERE table_type = 'BASE TABLE'
             EditToggleButton.Content = _isEditMode ? "Просмотр" : "Изменить данные";
         }
 
+        // Метод EditRow_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #6).
         private void EditRow_Click(object sender, RoutedEventArgs e)
         {
             if (DataTableGrid.SelectedItem == null)
@@ -375,6 +381,7 @@ WHERE table_type = 'BASE TABLE'
             DataTableGrid.BeginEdit();
         }
 
+        // Метод Window_KeyDown: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #7).
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
             if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.Z)
@@ -382,6 +389,7 @@ WHERE table_type = 'BASE TABLE'
                 UndoLastAction();
             }
         }
+        // Метод UndoLastAction: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #8).
         private void UndoLastAction()
         {
             if (selectedTable != null && undoStacks.ContainsKey(selectedTable) && undoStacks[selectedTable].Count > 0)
@@ -397,6 +405,7 @@ WHERE table_type = 'BASE TABLE'
                 MessageBox.Show("Нет изменений для отмены.");
             }
         }
+        // Метод PopulateFilterControls: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #9).
         private void PopulateFilterControls(DataTable table)
         {
             FilterColumnComboBox.Items.Clear();
@@ -417,6 +426,7 @@ WHERE table_type = 'BASE TABLE'
             if (FilterColumnComboBox.Items.Count > 0)
                 FilterColumnComboBox.SelectedIndex = 0;
         }
+        // Метод ApplyFilterButton_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #10).
         private void ApplyFilterButton_Click(object sender, RoutedEventArgs e)
         {
             if (currentTable == null) return;
@@ -440,6 +450,7 @@ WHERE table_type = 'BASE TABLE'
 
             currentTable.DefaultView.RowFilter = expr;
         }
+        // Метод IsCarAvailable: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #11).
         private bool IsCarAvailable(int carId, DateTime startDate, DateTime endDate)
         {
             try
@@ -476,15 +487,18 @@ WHERE table_type = 'BASE TABLE'
         }
 
 
+        // Метод ClearFilterButton_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #12).
         private void ClearFilterButton_Click(object sender, RoutedEventArgs e)
         {
             if (currentTable != null) currentTable.DefaultView.RowFilter = string.Empty;
             FilterValueBox.Clear();
         }
+        // Метод Table_BD_Closed: завершает текущую ветку без сохранения, корректно закрывая окно и возвращая управление вызывающему сценарию (комментарий #13).
         private void Table_BD_Closed(object sender, EventArgs e)
         {
             parentWindow.Show();
         }
+        // Метод TablesList_SelectionChanged: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #14).
         private void TablesList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (TablesList.SelectedItem is ListBoxItem item && item.Tag is string realTableName)
@@ -502,6 +516,7 @@ WHERE table_type = 'BASE TABLE'
                 AdjustPermissions();
             }
         }
+        // Метод RegisterEmployeeButton_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #15).
         private void RegisterEmployeeButton_Click(object sender, RoutedEventArgs e)
         {
             var registrationWindow = new RegisterUserWindow();
@@ -512,6 +527,7 @@ WHERE table_type = 'BASE TABLE'
                 LoadTable("users");
             }
         }
+        // Метод LoadTable: инициализирует состояние модуля при старте: загружает данные и подготавливает элементы экрана к работе (комментарий #16).
         private void LoadTable(string tableName)
         {
             try
@@ -715,6 +731,7 @@ FROM dbo.tariffs;");
 
 
 
+        // Метод CheckAvailability_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #17).
         private void CheckAvailability_Click(object sender, RoutedEventArgs e)
         {
             if (DataTableGrid.SelectedItem == null)
@@ -750,6 +767,7 @@ FROM dbo.tariffs;");
                 }
             }
         }
+        // Метод AddRow_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #18).
         private void AddRow_Click(object sender, RoutedEventArgs e)
         {
             if (currentTable != null)
@@ -792,6 +810,7 @@ FROM dbo.tariffs;");
             }
         }
 
+        // Метод DeleteRow_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #19).
         private void DeleteRow_Click(object sender, RoutedEventArgs e)
         {
 
@@ -802,6 +821,7 @@ FROM dbo.tariffs;");
                 (DataTableGrid.SelectedItem as DataRowView)?.Row.Delete();
             }
         }
+        // Метод SaveTableSnapshot: собирает итоговую структуру данных и сохраняет её в файл/хранилище с обработкой пограничных случаев (комментарий #20).
         private void SaveTableSnapshot()
         {
             if (currentTable != null && selectedTable != null)
@@ -812,6 +832,7 @@ FROM dbo.tariffs;");
                 undoStacks[selectedTable].Push(currentTable.Copy());
             }
         }
+        // Метод SaveChanges_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #21).
         private void SaveChanges_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -869,6 +890,7 @@ FROM dbo.tariffs;");
             }
         }
 
+        // Метод CreateTableButton_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #22).
         private void CreateTableButton_Click(object sender, RoutedEventArgs e)
         {
 
@@ -921,6 +943,7 @@ END";
         }
 
 
+        // Метод DeleteTable_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #23).
         private void DeleteTable_Click(object sender, RoutedEventArgs e)
         {
             if (TablesList.SelectedItem is ListBoxItem selectedItem)
@@ -963,6 +986,7 @@ IF OBJECT_ID('dbo.{tableName}', 'U') IS NOT NULL
             }
         }
 
+        // Метод AddColumn_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #24).
         private void AddColumn_Click(object sender, RoutedEventArgs e)
         {
             if (userRole != "admin")
@@ -1025,6 +1049,7 @@ ADD {dialog.ColumnName} {dialog.DataType};
         }
 
 
+        // Метод DeleteColumn_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #25).
         private void DeleteColumn_Click(object sender, RoutedEventArgs e)
         {
             if (userRole != "admin")
@@ -1095,6 +1120,7 @@ DROP COLUMN {columnName};
             }
         }
 
+        // Метод CorectColumn_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #26).
         private void CorectColumn_Click(object sender, RoutedEventArgs e)
         {
             if (userRole != "admin")
@@ -1153,6 +1179,7 @@ ALTER COLUMN {newName} {newType};
                 }
             }
         }
+        // Метод SearchBox_TextChanged: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #27).
         private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             _lastSearch = SearchBox.Text.Trim();
@@ -1189,11 +1216,13 @@ ALTER COLUMN {newName} {newType};
             }
         }
 
+        // Метод BackButton_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #28).
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
         }
 
+        // Метод DataTableGrid_SelectionChanged: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #29).
         private void DataTableGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
