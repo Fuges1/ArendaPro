@@ -140,7 +140,7 @@ namespace ArendaPro
                     var pic = doc.InlineShapes.AddPicture(photo, LinkToFile: false, SaveWithDocument: true, Range: rng);
                     pic.Width = wordApp.CentimetersToPoints(10);    
 
-                    pic.LockAspectRatio = MsoTriState.msoTrue;
+                    pic.LockAspectRatio = Microsoft.Office.Core.MsoTriState.msoTrue;
                 }
                 catch
                 {
