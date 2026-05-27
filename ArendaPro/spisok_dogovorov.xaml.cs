@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -269,8 +268,14 @@ namespace ArendaPro
             {
                 case "=": return v.ToString().Equals(val, StringComparison.OrdinalIgnoreCase);
                 case "≠": return !v.ToString().Equals(val, StringComparison.OrdinalIgnoreCase);
-                case "≥": return decimal.TryParse(v.ToString(), out var d1) && d1 >= decimal.Parse(val);
-                case "≤": return decimal.TryParse(v.ToString(), out var d2) && d2 <= decimal.Parse(val);
+                case "≥":
+                    return decimal.TryParse(v.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out var d1)
+                        && decimal.TryParse(val, NumberStyles.Any, CultureInfo.InvariantCulture, out var f1)
+                        && d1 >= f1;
+                case "≤":
+                    return decimal.TryParse(v.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out var d2)
+                        && decimal.TryParse(val, NumberStyles.Any, CultureInfo.InvariantCulture, out var f2)
+                        && d2 <= f2;
                 default: return v.ToString().IndexOf(val, StringComparison.OrdinalIgnoreCase) >= 0;
             }
         }
@@ -444,7 +449,6 @@ ORDER BY c.id ASC;
                     });
                 }
 
-                ContractsGrid.ItemsSource = null;
                 ContractsGrid.ItemsSource = allContracts;
             }
             catch (Exception ex)
@@ -601,26 +605,6 @@ ORDER BY c.id ASC;
                     }
                     LoadContracts();
                 }
-            }
-        }
-        private void Return_Click(object s, RoutedEventArgs e)
-        {
-            if (s is Button btn && btn.DataContext is ContractInfo ci)
-            {
-                if (!ci.IsPaid) { MessageBox.Show("Не погашена задолженность!"); return; }
-                DateTime due = ci.EndDate + ci.TimeEnd;    
-                bool early = DateTime.Now < due;
-
-                if (early && MessageBox.Show("Вернуть раньше срока?", "Подтвердите",
-                                MessageBoxButton.YesNo) != MessageBoxResult.Yes) return;
-
-                using var tr = database.BeginTransaction();
-                database.ExecuteNonQuery("UPDATE contracts SET status='cancelled', returned_at=now() WHERE id=@id",
-                                         new Dictionary<string, object> { { "@id", ci.ContractId } });
-                database.ExecuteNonQuery("UPDATE cars SET status='available' WHERE id=@car",
-                                         new Dictionary<string, object> { { "@car", ci.CarId } });
-                tr.Commit();
-                LoadContracts();
             }
         }
         private void OpenReport_Click(object sender, RoutedEventArgs e)
@@ -1085,30 +1069,6 @@ new Dictionary<string, object>
         {
             this.Close();
         }
-        private string DecryptToTempFile(string encryptedPath)
-        {
-            string tempPath = Path.Combine(Path.GetTempPath(), Path.GetFileNameWithoutExtension(encryptedPath) + ".docx");
-
-            byte[] key = new byte[32];
-            byte[] iv = new byte[16];
-            for (int i = 0; i < key.Length; i++) key[i] = (byte)(i + 1);
-            for (int i = 0; i < iv.Length; i++) iv[i] = (byte)(i + 2);
-
-            using (FileStream inputFileStream = new(encryptedPath, FileMode.Open, FileAccess.Read))
-            using (FileStream outputFileStream = new(tempPath, FileMode.Create, FileAccess.Write))
-            using (var aes = System.Security.Cryptography.Aes.Create())
-            {
-                aes.Key = key;
-                aes.IV = iv;
-
-                using var decryptor = aes.CreateDecryptor();
-                using var cryptoStream = new System.Security.Cryptography.CryptoStream(inputFileStream, decryptor, System.Security.Cryptography.CryptoStreamMode.Read);
-                cryptoStream.CopyTo(outputFileStream);
-            }
-
-            return tempPath;
-        }
-
         private void ContractsGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
