@@ -161,6 +161,17 @@ namespace ArendaPro
             public string Status { get; set; }
             public int ContractId { get; set; }
             public string FilePath { get; set; }
+            public decimal RefundAmount { get; set; }
+
+            public decimal UnpaidAmount { get; set; }
+
+            public DateTime? ActualReturnDate { get; set; }
+
+            public string ReturnReason { get; set; }
+
+            public string PaymentStatus { get; set; }
+
+            public string ContractStage { get; set; }
             public string Familia { get; set; }
             public string Imia { get; set; }
             public string Otchestvo { get; set; }
@@ -271,6 +282,13 @@ SELECT
     c.extra_amount,
     c.paid_amount,
 
+c.refund_amount,
+c.unpaid_amount,
+c.actual_return_date,
+c.return_reason,
+c.payment_status,
+c.contract_stage,
+
     cr.marka + ' ' + cr.gos_nomer AS car_info,
 
     c.price,
@@ -373,7 +391,31 @@ ORDER BY c.id ASC;
                             ? DateTime.MinValue
                             : Convert.ToDateTime(row["creation_date"]),
 
-                        IsActive = row["status"].ToString() == "active"
+                        IsActive = row["status"].ToString() == "active",
+
+                        RefundAmount = row["refund_amount"] == DBNull.Value
+    ? 0
+    : Convert.ToDecimal(row["refund_amount"]),
+
+                        UnpaidAmount = row["unpaid_amount"] == DBNull.Value
+    ? 0
+    : Convert.ToDecimal(row["unpaid_amount"]),
+
+                        ActualReturnDate = row["actual_return_date"] == DBNull.Value
+    ? null
+    : Convert.ToDateTime(row["actual_return_date"]),
+
+                        ReturnReason = row["return_reason"] == DBNull.Value
+    ? ""
+    : row["return_reason"].ToString(),
+
+                        PaymentStatus = row["payment_status"] == DBNull.Value
+    ? ""
+    : row["payment_status"].ToString(),
+
+                        ContractStage = row["contract_stage"] == DBNull.Value
+    ? ""
+    : row["contract_stage"].ToString(),
                     });
                 }
 
@@ -568,7 +610,17 @@ ORDER BY c.id ASC;
             if (!(sender is Button btn && btn.DataContext is ContractInfo ci)) return;
 
             bool isEarlyReturn = DateTime.Now < ci.EndDate + ci.TimeEnd;
+            decimal refundAmount = 0;
 
+            if (isEarlyReturn)
+            {
+                int unusedDays = (ci.EndDate.Date - DateTime.Now.Date).Days;
+
+                if (unusedDays > 0)
+                {
+                    refundAmount = unusedDays * ci.Price;
+                }
+            }
             var dlg = new ReturnReportWindow(
                 contractId: ci.ContractId,
                 isEarly: isEarlyReturn,
@@ -816,10 +868,21 @@ ORDER BY c.id ASC;
 
                 }
 
-              
+
                 database.ExecuteNonQuery(
-                    "UPDATE contracts SET status = 'active' WHERE id = @id",
-                    new Dictionary<string, object> { ["@id"] = contract.ContractId });
+@"UPDATE contracts
+SET 
+    status = 'active',
+    contract_stage = 'active',
+    payment_status = @paymentStatus,
+    unpaid_amount = @unpaid
+WHERE id = @id",
+new Dictionary<string, object>
+{
+    ["@id"] = contract.ContractId,
+    ["@paymentStatus"] = paidNow ? "paid" : "unpaid",
+    ["@unpaid"] = paidNow ? 0 : contract.TotalAmount
+});
 
                 database.ExecuteNonQuery(
                     "INSERT INTO car_occupations(car_id, status, start_date, end_date) VALUES(@car,'occupied',@sd,@ed)",
