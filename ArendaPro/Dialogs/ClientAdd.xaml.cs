@@ -7,7 +7,7 @@ using System.Windows.Input;
 
 namespace ArendaPro
 {
-    // Логика класса: ClientAdd инкапсулирует соответствующий экран/сервис и его сценарии работы.
+    // Логика класса: ClientAdd содержит сценарии этого модуля, управляет данными и координирует взаимодействие UI с сервисами.
     public partial class ClientAdd : Window
     {
         public DataRow NewClientRow { get; private set; }

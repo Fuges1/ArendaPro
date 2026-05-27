@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Data.SqlClient;
 namespace ArendaPro
 {
-    // Логика класса: BD инкапсулирует соответствующий экран/сервис и его сценарии работы.
+    // Логика класса: BD содержит сценарии этого модуля, управляет данными и координирует взаимодействие UI с сервисами.
     internal class BD
     {
         private readonly string connectionString;
@@ -16,7 +16,7 @@ namespace ArendaPro
             this.connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
         }
 
-        // Логика: метод GetConnection выполняет соответствующий шаг бизнес-процесса этого окна/сервиса.
+        // Логика: метод GetConnection реализует отдельный шаг бизнес-логики, связывая входные данные, проверки и итоговое действие.
         public SqlConnection GetConnection() => new(connectionString);
 
         public DataTable ExecuteQuery(string query)

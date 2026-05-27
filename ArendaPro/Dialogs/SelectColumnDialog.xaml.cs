@@ -4,7 +4,7 @@ using System.Windows;
 namespace ArendaPro
 {
 
-    // Логика класса: SelectColumnDialog инкапсулирует соответствующий экран/сервис и его сценарии работы.
+    // Логика класса: SelectColumnDialog содержит сценарии этого модуля, управляет данными и координирует взаимодействие UI с сервисами.
     public partial class SelectColumnDialog : Window
     {
         public string SelectedColumn => ColumnComboBox.SelectedItem?.ToString();

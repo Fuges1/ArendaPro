@@ -5,7 +5,7 @@ using System.Windows;
 
 namespace ArendaPro
 {
-    // Логика класса: AddConnectionWindow инкапсулирует соответствующий экран/сервис и его сценарии работы.
+    // Логика класса: AddConnectionWindow содержит сценарии этого модуля, управляет данными и координирует взаимодействие UI с сервисами.
     public partial class AddConnectionWindow : Window
     {
         public AddConnectionWindow()

@@ -11,7 +11,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 namespace ArendaPro
 {
-    // Логика класса: Tarifi инкапсулирует соответствующий экран/сервис и его сценарии работы.
+    // Логика класса: Tarifi содержит сценарии этого модуля, управляет данными и координирует взаимодействие UI с сервисами.
     public partial class Tarifi : Window
     {
         private readonly string _cs = ConfigurationManager
@@ -22,7 +22,7 @@ namespace ArendaPro
         private List<TariffRow> rows;
 
         private readonly bool isAdmin;
-        // Логика класса: TariffSegment инкапсулирует соответствующий экран/сервис и его сценарии работы.
+        // Логика класса: TariffSegment содержит сценарии этого модуля, управляет данными и координирует взаимодействие UI с сервисами.
         public class TariffSegment
         {
             public int CarId { get; set; }
@@ -39,7 +39,7 @@ namespace ArendaPro
             InitializeComponent();
             isAdmin = isAdminFlag;
         }
-        // Логика класса: OverlapInfo инкапсулирует соответствующий экран/сервис и его сценарии работы.
+        // Логика класса: OverlapInfo содержит сценарии этого модуля, управляет данными и координирует взаимодействие UI с сервисами.
         public class OverlapInfo
         {
             public DateTime StartDate { get; set; }
@@ -182,7 +182,7 @@ VALUES
             public bool FromHistory { get; set; }
             public decimal? OriginalPrice { get; set; }
             public event PropertyChangedEventHandler PropertyChanged;
-            // Логика: метод OnChanged выполняет соответствующий шаг бизнес-процесса этого окна/сервиса.
+            // Логика: метод OnChanged реализует отдельный шаг бизнес-логики, связывая входные данные, проверки и итоговое действие.
             private void OnChanged(string p) =>
                 PropertyChanged?.Invoke(this, new(p));
         }
@@ -409,7 +409,7 @@ ORDER BY end_date;
 
         }
 
-        // Логика класса: EndDateConverter инкапсулирует соответствующий экран/сервис и его сценарии работы.
+        // Логика класса: EndDateConverter содержит сценарии этого модуля, управляет данными и координирует взаимодействие UI с сервисами.
         public class EndDateConverter : IValueConverter
         {
             public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -594,7 +594,7 @@ WHERE end_date < @today;
             LoadRows();
         }
 
-        // Логика: метод BtnClose_Click выполняет соответствующий шаг бизнес-процесса этого окна/сервиса.
+        // Логика: обработчик BtnClose_Click реагирует на действие пользователя в UI, валидирует ввод и запускает нужный сценарий.
         private void BtnClose_Click(object s, RoutedEventArgs e) => Close();
     }
 }

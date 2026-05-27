@@ -6,7 +6,7 @@ using static ArendaPro.OtherOborot;
 namespace ArendaPro
 {
 
-    // Логика класса: MainWindow инкапсулирует соответствующий экран/сервис и его сценарии работы.
+    // Логика класса: MainWindow содержит сценарии этого модуля, управляет данными и координирует взаимодействие UI с сервисами.
     public partial class MainWindow : Window
     {
         private readonly LoginWindow loginWindow;

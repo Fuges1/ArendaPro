@@ -11,7 +11,7 @@ using System.Windows.Controls;
 namespace ArendaPro
 {
 
-    // Логика класса: OtherOborot инкапсулирует соответствующий экран/сервис и его сценарии работы.
+    // Логика класса: OtherOborot содержит сценарии этого модуля, управляет данными и координирует взаимодействие UI с сервисами.
     public partial class OtherOborot : Window
     {
         private readonly string _fullUsername;

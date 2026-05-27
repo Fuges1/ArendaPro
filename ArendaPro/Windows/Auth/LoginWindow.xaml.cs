@@ -8,10 +8,10 @@ using static ArendaPro.OtherOborot;
 using System.Data.SqlClient;
 namespace ArendaPro
 {
-    // Логика класса: LoginWindow инкапсулирует соответствующий экран/сервис и его сценарии работы.
+    // Логика класса: LoginWindow содержит сценарии этого модуля, управляет данными и координирует взаимодействие UI с сервисами.
     public partial class LoginWindow : Window
     {
-        // Логика класса: UserData инкапсулирует соответствующий экран/сервис и его сценарии работы.
+        // Логика класса: UserData содержит сценарии этого модуля, управляет данными и координирует взаимодействие UI с сервисами.
         public class UserData
         {
             public int UserId { get; set; }
@@ -96,14 +96,14 @@ namespace ArendaPro
             }
         }
 
-        // Логика: метод txtUsername_TextChanged выполняет соответствующий шаг бизнес-процесса этого окна/сервиса.
+        // Логика: метод txtUsername_TextChanged реализует отдельный шаг бизнес-логики, связывая входные данные, проверки и итоговое действие.
         private void txtUsername_TextChanged(object sender, TextChangedEventArgs e) =>
             txtUsernamePlaceholder.Visibility =
                 string.IsNullOrWhiteSpace(txtUsername.Text)
                     ? Visibility.Visible
                     : Visibility.Collapsed;
 
-        // Логика: метод txtPassword_PasswordChanged выполняет соответствующий шаг бизнес-процесса этого окна/сервиса.
+        // Логика: метод txtPassword_PasswordChanged реализует отдельный шаг бизнес-логики, связывая входные данные, проверки и итоговое действие.
         private void txtPassword_PasswordChanged(object sender, RoutedEventArgs e) =>
             txtPasswordPlaceholder.Visibility =
                 string.IsNullOrWhiteSpace(txtPassword.Password)
@@ -123,7 +123,7 @@ namespace ArendaPro
             ErrorTextBlock.Visibility = Visibility.Visible;
         }
 
-        // Логика: метод IsBcryptHash выполняет соответствующий шаг бизнес-процесса этого окна/сервиса.
+        // Логика: метод IsBcryptHash реализует отдельный шаг бизнес-логики, связывая входные данные, проверки и итоговое действие.
         private bool IsBcryptHash(string s) =>
           !string.IsNullOrEmpty(s) &&
           (s.StartsWith("$2a$") || s.StartsWith("$2b$") || s.StartsWith("$2y$"));

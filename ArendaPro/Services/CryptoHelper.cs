@@ -6,11 +6,11 @@ namespace ArendaPro
 {
     public static class CryptoHelper
     {
-        // Логика: метод GetKey выполняет соответствующий шаг бизнес-процесса этого окна/сервиса.
+        // Логика: метод GetKey реализует отдельный шаг бизнес-логики, связывая входные данные, проверки и итоговое действие.
         public static byte[] GetKey() =>
             StringToByteArray(Properties.Settings.Default.EncryptionKey, 32);
 
-        // Логика: метод GetIV выполняет соответствующий шаг бизнес-процесса этого окна/сервиса.
+        // Логика: метод GetIV реализует отдельный шаг бизнес-логики, связывая входные данные, проверки и итоговое действие.
         public static byte[] GetIV() =>
             StringToByteArray(Properties.Settings.Default.EncryptionIV, 16);
 

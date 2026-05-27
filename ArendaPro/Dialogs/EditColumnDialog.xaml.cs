@@ -4,7 +4,7 @@ using System.Windows;
 namespace ArendaPro
 {
 
-    // Логика класса: EditColumnDialog инкапсулирует соответствующий экран/сервис и его сценарии работы.
+    // Логика класса: EditColumnDialog содержит сценарии этого модуля, управляет данными и координирует взаимодействие UI с сервисами.
     public partial class EditColumnDialog : Window
     {
         public string SelectedColumn => (ColumnSelector.SelectedItem as string) ?? "";

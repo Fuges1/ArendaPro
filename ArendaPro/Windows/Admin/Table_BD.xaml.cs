@@ -11,7 +11,7 @@ using System.Windows.Input;
 using System.Data.SqlClient;
 namespace ArendaPro
 {
-    // Логика класса: Table_BD инкапсулирует соответствующий экран/сервис и его сценарии работы.
+    // Логика класса: Table_BD содержит сценарии этого модуля, управляет данными и координирует взаимодействие UI с сервисами.
     public partial class Table_BD : Window
     {
         private string _lastSearch = "";

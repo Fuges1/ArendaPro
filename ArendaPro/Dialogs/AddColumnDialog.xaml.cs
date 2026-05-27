@@ -3,7 +3,7 @@
 namespace ArendaPro
 {
 
-    // Логика класса: AddColumnDialog инкапсулирует соответствующий экран/сервис и его сценарии работы.
+    // Логика класса: AddColumnDialog содержит сценарии этого модуля, управляет данными и координирует взаимодействие UI с сервисами.
     public partial class AddColumnDialog : Window
     {
         public string ColumnName { get; private set; }

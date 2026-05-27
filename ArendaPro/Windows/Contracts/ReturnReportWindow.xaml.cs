@@ -8,7 +8,7 @@ using System.Windows;
 namespace ArendaPro
 {
 
-    // Логика класса: ReturnReportWindow инкапсулирует соответствующий экран/сервис и его сценарии работы.
+    // Логика класса: ReturnReportWindow содержит сценарии этого модуля, управляет данными и координирует взаимодействие UI с сервисами.
     public partial class ReturnReportWindow : Window
     {
 

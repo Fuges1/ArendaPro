@@ -6,7 +6,7 @@ using System.Windows.Controls;
 using System.Data.SqlClient;
 namespace ArendaPro
 {
-    // Логика класса: RegisterUserWindow инкапсулирует соответствующий экран/сервис и его сценарии работы.
+    // Логика класса: RegisterUserWindow содержит сценарии этого модуля, управляет данными и координирует взаимодействие UI с сервисами.
     public partial class RegisterUserWindow : Window
     {
         private readonly string connectionString;

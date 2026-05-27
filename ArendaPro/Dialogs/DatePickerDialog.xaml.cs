@@ -4,7 +4,7 @@ using System.Windows;
 namespace ArendaPro
 {
 
-    // Логика класса: DatePickerDialog инкапсулирует соответствующий экран/сервис и его сценарии работы.
+    // Логика класса: DatePickerDialog содержит сценарии этого модуля, управляет данными и координирует взаимодействие UI с сервисами.
     public partial class DatePickerDialog : Window
     {
         public DateTime SelectedDate { get; private set; }
@@ -20,7 +20,7 @@ namespace ArendaPro
             SelectedDate = dp.SelectedDate ?? DateTime.Now;
             DialogResult = true;
         }
-        // Логика: метод Cancel_Click выполняет соответствующий шаг бизнес-процесса этого окна/сервиса.
+        // Логика: обработчик Cancel_Click реагирует на действие пользователя в UI, валидирует ввод и запускает нужный сценарий.
         private void Cancel_Click(object s, RoutedEventArgs e) => Close();
     }
 }
