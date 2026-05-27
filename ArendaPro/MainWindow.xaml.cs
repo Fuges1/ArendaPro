@@ -9,11 +9,8 @@ namespace ArendaPro
     public partial class MainWindow : Window
     {
         private LoginWindow loginWindow;
-        private string userRole;
-        private string userName;
-        private string fullName;
-        private string email;
-        private string passportNumber;
+        private readonly string userRole;
+        private readonly string fullName;
 
         public MainWindow(
     string role,
@@ -29,6 +26,7 @@ namespace ArendaPro
         {
             InitializeComponent();
 
+            _ = username;
             this.userRole = role;
             DispatcherTimer timer = new();
             timer.Interval = TimeSpan.FromSeconds(1);
@@ -89,7 +87,6 @@ namespace ArendaPro
 
             var win = new Tarifi(isAdmin);
             win.ShowDialog();
-            ;
         }
 
         private void Button_spisok_dogovorov_Click(object sender, RoutedEventArgs e)

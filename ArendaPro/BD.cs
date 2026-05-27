@@ -34,11 +34,7 @@ namespace ArendaPro
             using var conn = new SqlConnection(connectionString);
             conn.Open();
             using var cmd = new SqlCommand(sql, conn);
-
-            foreach (var param in parameters)
-            {
-                cmd.Parameters.AddWithValue(param.Key, param.Value ?? DBNull.Value);
-            }
+            AddDictionaryParameters(cmd, parameters);
 
             using var reader = cmd.ExecuteReader();
             dt.Load(reader);
@@ -51,14 +47,7 @@ namespace ArendaPro
             conn.Open();
 
             using var cmd = new SqlCommand(sql, conn);
-
-            if (parameters != null)
-            {
-                foreach (var param in parameters)
-                {
-                    cmd.Parameters.AddWithValue(param.Key, param.Value ?? DBNull.Value);
-                }
-            }
+            AddDictionaryParameters(cmd, parameters);
 
             return cmd.ExecuteNonQuery();
         }
@@ -70,23 +59,7 @@ namespace ArendaPro
                 conn.Open();
                 using (var cmd = new SqlCommand(sql, conn))
                 {
-                    foreach (var param in parameters)
-                    {
-                        var sqlParam = cmd.CreateParameter();
-                        sqlParam.ParameterName = param.Key;
-
-                        if (param.Value is DateTime dateValue)
-                        {
-                            sqlParam.Value = dateValue.Date;
-                            sqlParam.SqlDbType = SqlDbType.Date;
-                        }
-                        else
-                        {
-                            sqlParam.Value = param.Value ?? DBNull.Value;
-                        }
-
-                        cmd.Parameters.Add(sqlParam);
-                    }
+                    AddDictionaryParameters(cmd, parameters, convertDateTimeToDate: true);
 
                     try
                     {
@@ -119,11 +92,7 @@ namespace ArendaPro
 
             if (parameters != null)
             {
-                var props = parameters.GetType().GetProperties();
-                foreach (var prop in props)
-                {
-                    cmd.Parameters.AddWithValue("@" + prop.Name, prop.GetValue(parameters) ?? DBNull.Value);
-                }
+                AddObjectParameters(cmd, parameters, addAtPrefix: true);
             }
 
             var result = await cmd.ExecuteScalarAsync();
@@ -139,11 +108,7 @@ namespace ArendaPro
 
             if (parameters != null)
             {
-                var props = parameters.GetType().GetProperties();
-                foreach (var prop in props)
-                {
-                    cmd.Parameters.AddWithValue(prop.Name, prop.GetValue(parameters) ?? DBNull.Value);
-                }
+                AddObjectParameters(cmd, parameters, addAtPrefix: true);
             }
 
             return await cmd.ExecuteNonQueryAsync();
@@ -159,17 +124,51 @@ namespace ArendaPro
 
             if (parameters != null)
             {
-                var props = parameters.GetType().GetProperties();
-                foreach (var prop in props)
-                {
-                    cmd.Parameters.AddWithValue(prop.Name, prop.GetValue(parameters) ?? DBNull.Value);
-                }
+                AddObjectParameters(cmd, parameters, addAtPrefix: true);
             }
 
             using var reader = await cmd.ExecuteReaderAsync();
             dt.Load(reader);
             return dt;
         }
+
+        private static void AddDictionaryParameters(SqlCommand command, Dictionary<string, object> parameters, bool convertDateTimeToDate = false)
+        {
+            if (parameters == null)
+            {
+                return;
+            }
+
+            foreach (var param in parameters)
+            {
+                var sqlParam = command.CreateParameter();
+                sqlParam.ParameterName = NormalizeParameterName(param.Key);
+                if (convertDateTimeToDate && param.Value is DateTime dateValue)
+                {
+                    sqlParam.Value = dateValue.Date;
+                    sqlParam.SqlDbType = SqlDbType.Date;
+                }
+                else
+                {
+                    sqlParam.Value = param.Value ?? DBNull.Value;
+                }
+
+                command.Parameters.Add(sqlParam);
+            }
+        }
+
+        private static void AddObjectParameters(SqlCommand command, object parameters, bool addAtPrefix)
+        {
+            var props = parameters.GetType().GetProperties();
+            foreach (var prop in props)
+            {
+                var name = addAtPrefix ? $"@{prop.Name}" : prop.Name;
+                command.Parameters.AddWithValue(name, prop.GetValue(parameters) ?? DBNull.Value);
+            }
+        }
+
+        private static string NormalizeParameterName(string parameterName)
+            => parameterName.StartsWith("@", StringComparison.Ordinal) ? parameterName : "@" + parameterName;
 
     }
 }
