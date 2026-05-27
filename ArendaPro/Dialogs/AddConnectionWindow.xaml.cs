@@ -34,6 +34,7 @@ namespace ArendaPro
             var file = "connections.json";
             var list = new List<MainWindow.DbConnectionConfig>();
 
+            // Шаг 1: читаем текущий список подключений, если файл уже создан ранее.
             if (File.Exists(file))
             {
                 string json = File.ReadAllText(file);
@@ -41,12 +42,14 @@ namespace ArendaPro
                     ?? new List<MainWindow.DbConnectionConfig>();
             }
 
+            // Шаг 2: не допускаем дубликатов по имени, чтобы пользователю было проще выбирать подключение.
             if (list.Exists(c => c.Name == name))
             {
                 MessageBox.Show("Подключение с таким именем уже существует.");
                 return;
             }
 
+            // Шаг 3: добавляем новое подключение и сохраняем конфиг в читаемом формате JSON.
             list.Add(newConn);
             File.WriteAllText(file, JsonSerializer.Serialize(list, new JsonSerializerOptions { WriteIndented = true }));
 

@@ -22,6 +22,7 @@ namespace ArendaPro
         {
             try
             {
+                // Шаг 1: считываем введённые администратором значения и нормализуем текстовые поля.
                 string username = UsernameBox.Text.Trim();
                 string password = PasswordBox.Password;
                 string role = ((ComboBoxItem)RoleBox.SelectedItem)?.Content.ToString();
@@ -51,6 +52,7 @@ namespace ArendaPro
                 }
 
 
+                // Шаг 2: подключаемся к БД только после проверок обязательных полей и конфигурации.
                 using var conn = new SqlConnection(connectionString);
                 await conn.OpenAsync();
 
@@ -78,6 +80,7 @@ namespace ArendaPro
                         return;
                     }
                 }
+                // Шаг 3: перед сохранением всегда хешируем пароль, чтобы не хранить его в открытом виде.
                 string hash = BCrypt.Net.BCrypt.HashPassword(password);
                 using (var insertCmd = new SqlCommand(@"
         INSERT INTO public.users
