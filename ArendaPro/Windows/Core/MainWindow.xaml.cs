@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Threading;
 using static ArendaPro.OtherOborot;
 
@@ -41,6 +42,9 @@ namespace ArendaPro
             txtPassportIssued.Text = $"Выдан: {passportIssuedBy}";
             txtPassportDate.Text = $"Дата выдачи: {passportIssueDate:dd.MM.yyyy}";
             ConfigureAccessByRole(role);
+
+            employee_fullname.Text = fullName;
+
         }
 
         // Метод ConfigureAccessByRole: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #1).

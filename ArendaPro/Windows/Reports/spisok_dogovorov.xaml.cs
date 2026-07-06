@@ -571,6 +571,24 @@ ORDER BY c.id ASC;
                 }
             }
         }
+        public class PaymentStatusBrushConverter : IValueConverter
+        {
+            public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+            {
+                return value?.ToString() switch
+                {
+                    "paid" => Brushes.LightGreen,
+                    "pending" => Brushes.Khaki,
+                    "failed" => Brushes.IndianRed,
+                    _ => Brushes.LightCoral
+                };
+            }
+
+            public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+            {
+                throw new NotImplementedException();
+            }
+        }
         // Метод ToggleContractStatus_Click: обрабатывает нажатие в интерфейсе: считывает ввод, проверяет ограничения и запускает следующий пользовательский шаг (комментарий #24).
         private void ToggleContractStatus_Click(object sender, RoutedEventArgs e)
         {
