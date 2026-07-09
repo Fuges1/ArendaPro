@@ -26,7 +26,8 @@
             </Grid>
 
             <Button x:Name="LoginButton" Content="Войти" Click="LoginButton_Click" 
-                   Width="100" HorizontalAlignment="Center" Margin="0,10,0,0"/>
+                   Width="100" HorizontalAlignment="Center" Margin="0,10,0,0"
+                   IsDefault="True"/>
             <TextBlock x:Name="ErrorTextBlock" Foreground="Red" Visibility="Collapsed" TextWrapping="Wrap"/>
         </StackPanel>
     </Grid>

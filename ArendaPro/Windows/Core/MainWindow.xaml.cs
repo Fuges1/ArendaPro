@@ -28,10 +28,6 @@ namespace ArendaPro
             InitializeComponent();
 
             this.userRole = role;
-            DispatcherTimer timer = new();
-            timer.Interval = TimeSpan.FromSeconds(1);
-            timer.Tick += (s, e) => txtCurrentTime.Text = DateTime.Now.ToString("HH:mm:ss dd.MM.yyyy");
-            timer.Start();
 
             loginWindow = (LoginWindow)loginWinn;
             fullName = $"{lastName} {firstName} {middleName}";
@@ -43,8 +39,24 @@ namespace ArendaPro
             txtPassportDate.Text = $"Дата выдачи: {passportIssueDate:dd.MM.yyyy}";
             ConfigureAccessByRole(role);
 
-            employee_fullname.Text = fullName;
-
+            employee_fullname.Text = fullName; 
+            if (role == "admin")
+            {
+                employee_role.Text = "Администратор";
+            }
+            else if (role == "manager") 
+            {
+                employee_role.Text = "Менеджер";
+            }
+            else
+            {
+                employee_role.Text = "Никто";
+            }
+            DispatcherTimer timer = new();
+            timer.Interval = TimeSpan.FromSeconds(1);
+            timer.Tick += (s, e) => date.Text = DateTime.Now.ToString("HH:mm:ss dd.MM.yyyy");
+            timer.Start();
+           
         }
 
         // Метод ConfigureAccessByRole: реализует отдельный этап внутренней логики модуля: трансформирует вход, применяет правила и формирует следующий шаг исполнения (комментарий #1).
@@ -116,6 +128,26 @@ namespace ArendaPro
             loginWindow?.ResetForRelogin();
             loginWindow?.Show();
             this.Close();       
+        }
+
+        private void Button_Setting_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Button_Notification_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Button_Avto_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Button_Client_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

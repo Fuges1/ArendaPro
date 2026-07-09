@@ -90,10 +90,26 @@
                                FontWeight="Bold"
                                HorizontalAlignment="Right"/>
 
-                    <TextBlock Text="Администратор"
+                    <TextBlock 
+                               Name="employee_role"
                                Foreground="Gray"
                                FontSize="12"
                                HorizontalAlignment="Right"/>
+                    <TextBlock 
+                               Name="date"
+                               Text="rfgdfgdfg"
+                               Foreground="Gray"
+                               FontSize="12"
+                               HorizontalAlignment="Right">
+                        <TextBlock.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform/>
+                                <SkewTransform/>
+                                <RotateTransform Angle="0"/>
+                                <TranslateTransform/>
+                            </TransformGroup>
+                        </TextBlock.RenderTransform>
+                    </TextBlock>
 
                 </StackPanel>
 
@@ -119,8 +135,10 @@
 
                 <DockPanel>
 
-                    <Button Content="Выход"
-                            Style="{StaticResource ExitButtonStyle}"
+                    <Button 
+                            Name="Exit"
+                            Content="Выход"
+                            Style="{StaticResource ExitButtonStyle}" Click="Button_Exit_Click"
                             DockPanel.Dock="Bottom"
                             Margin="10"/>
 
@@ -128,29 +146,45 @@
 
                         <StackPanel>
 
-                            <Button Content="Таблицы"
-                                    Style="{StaticResource MenuButtonStyle}"/>
+                            <Button 
+                                    Name="Button_Table"
+                                    Content="Таблицы"
+                                    Style="{StaticResource MenuButtonStyle}" Click="Button_Table_Click"/>
 
-                            <Button Content="Автомобили"
-                                    Style="{StaticResource MenuButtonStyle}"/>
+                            <Button 
+                                    Name="Avto"
+                                    Content="Автомобили"
+                                    Style="{StaticResource MenuButtonStyle}" Click="Button_Avto_Click"/>
 
-                            <Button Content="Клиенты"
-                                    Style="{StaticResource MenuButtonStyle}"/>
+                            <Button  
+                                    Name="Client"
+                                    Content="Клиенты"
+                                    Style="{StaticResource MenuButtonStyle}" Click="Button_Client_Click"/>
 
-                            <Button Content="Тарифы"
-                                    Style="{StaticResource MenuButtonStyle}"/>
+                            <Button  
+                                    Name="tarifi"
+                                    Content="Тарифы"
+                                    Style="{StaticResource MenuButtonStyle}" Click="Button_tarifi_Click"/>
 
-                            <Button Content="Договоры"
-                                    Style="{StaticResource MenuButtonStyle}"/>
+                            <Button  
+                                    Name="Dogovor"
+                                    Content="Договоры"
+                                    Style="{StaticResource MenuButtonStyle}" Click="Button_Dogovor_Click"/>
 
-                            <Button Content="Отчёты"
-                                    Style="{StaticResource MenuButtonStyle}"/>
+                            <Button  
+                                    Name="OtherOborot"
+                                    Content="Отчёты"
+                                    Style="{StaticResource MenuButtonStyle}" Click="Button_OtherOborot_Click"/>
 
-                            <Button Content="Уведомления"
-                                    Style="{StaticResource MenuButtonStyle}"/>
+                            <Button  
+                                    Name="Notification"
+                                    Content="Уведомления"
+                                    Style="{StaticResource MenuButtonStyle}" Click="Button_Notification_Click"/>
 
-                            <Button Content="Настройки"
-                                    Style="{StaticResource MenuButtonStyle}"/>
+                            <Button  
+                                    Name="Setting"
+                                    Content="Настройки"
+                                    Style="{StaticResource MenuButtonStyle}" Click="Button_Setting_Click"/>
 
                         </StackPanel>
 
@@ -181,7 +215,6 @@
                                    TextWrapping="Wrap"/>
                         <TextBlock x:Name="txtWorkerName"/>
                         <TextBlock x:Name="txtRoleInfo"/>
-                        <TextBlock x:Name="txtCurrentTime"/>
 
                         <TextBlock x:Name="txtEmail"
                Visibility="Collapsed"/>
